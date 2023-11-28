@@ -6,6 +6,8 @@ Sample list of things to do.
 
 * Download module release
 * Fetch module release
+* List modules
+* Fetch module
 
 ## Documentation
 
