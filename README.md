@@ -17,7 +17,7 @@ All puppet modules are stored in a local cache-directory structure as follows
 
     ${CACHE_ROOT}/{module_hash}/module_owner/{module_owner}-{modulename}-version.tar.gz
 
-The `module_hash` is the first character in the module_owner.
+The `module_hash` is the first character of the module_owner string.
 
 ### Example
 
@@ -30,6 +30,18 @@ The `module_hash` is the first character in the module_owner.
 
 Build the code using make.
 
+
+# Change default puppet settings
+
+Change the default puppet config settings to point to goforge:s
+address.
+
+    puppet config print module_repository    # = https://forgeapi.puppet.com
+    puppet config set http://localhost:8080
+
+Start goforge and try to download and install some module
+
+    puppet module install puppetlabs-stdlib
 
 # Implementation notes
 
