@@ -19,17 +19,17 @@ func isValidOwnerSlug(slug string) (bool, error) {
 func NewOwner(uri string, slug string, username string, gravatar_id string) (*Owner, error) {
 	ok, _ := isValidOwnerSlug(slug)
 	if !ok {
-		return nil, fmt.Errorf("Cant create Owner with illegal slug: %v", slug)
+		return nil, fmt.Errorf("cant create owner with invalid slug: %v", slug)
 	}
 	return &Owner{uri, slug, username, gravatar_id}, nil
 }
 
 func (owner *Owner) asJson() string {
-	json := fmt.Sprintf("{")
+	json := "{"
 	json += fmt.Sprintf("%q:%q,", "uri", owner.Uri)
 	json += fmt.Sprintf("%q:%q,", "slug", owner.Slug)
 	json += fmt.Sprintf("%q:%q,", "username", owner.Username)
 	json += fmt.Sprintf("%q:%q", "gravatar_id", owner.Gravatar_id)
-	json += fmt.Sprintf("}")
+	json += "}"
 	return json
 }

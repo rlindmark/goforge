@@ -19,23 +19,23 @@ func NewPagination(limit int, offset int, first string, previous *string, curren
 }
 
 func (p *Pagination) asJson() string {
-	result := fmt.Sprintf("{")
+	result := "{"
 	result += fmt.Sprintf("\"limit\":%d,", p.Limit)
 	result += fmt.Sprintf("\"offset\":%d,", p.Offset)
 	result += fmt.Sprintf("\"first\":%q,", p.First)
 	if p.Previous == nil {
-		result += fmt.Sprintf("\"previous\":null,")
+		result += "\"previous\":null,"
 	} else {
 		result += fmt.Sprintf("\"previous\":%v,", p.Previous)
 	}
 	result += fmt.Sprintf("\"current\":%q,", p.Current)
 	if p.Next == nil {
-		result += fmt.Sprintf("\"next\":null,")
+		result += "\"next\":null,"
 	} else {
 		result += fmt.Sprintf("\"next\":%v,", p.Next)
 	}
 	result += fmt.Sprintf("\"total\":%d", p.Total)
-	result += fmt.Sprintf("}")
+	result += "}"
 
 	return result
 }
