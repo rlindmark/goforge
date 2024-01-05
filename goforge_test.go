@@ -35,21 +35,36 @@ func TestValidModuleReleaseFilename(t *testing.T) {
 }
 
 func TestV3File(t *testing.T) {
+	var testCases = []struct {
+		path          string
+		statusCode    int
+		contentLength int
+		response      string
+	}{
+		{"/v3/files/puppetlabs-stdlib-9.4.1.tar.gz", 200, 161699, "ok"},
+		{"/v3/files/puppetlabs-stdlib-9.4.0.tar.gz", 200, 162679, "ok"},
+		{"/v3/files/puppetlabs-stdlib-1.0.0.tar.gz", 200, -1, "ok"},
+		{"/v3/files/puppetlabs-stdlib-1.0.0.tar", 200, -1, "ok"},
+	}
+
 	t.Run("returns a forge module", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/v3/files/puppetlabs-stdlib-9.4.0.tar.gz", nil)
-		response := httptest.NewRecorder()
 
-		handleV3Files(response, request)
+		for _, test := range testCases {
 
-		//got := response.Body.String()
-		got := response.Result().StatusCode
-		if got != 200 {
-			t.Errorf("expected 200 got %d", got)
-		}
-		got = int(response.Result().ContentLength)
-		if got != 161699 {
-			t.Errorf("expected contentlengt = 161699 got %d", got)
+			request, _ := http.NewRequest(http.MethodGet, test.path, nil)
+			response := httptest.NewRecorder()
 
+			handleV3Files(response, request)
+
+			//got := response.Body.String()
+			got := response.Result().StatusCode
+			if got != test.statusCode {
+			}
+			got = int(response.Result().ContentLength)
+			if got != test.contentLength {
+				t.Errorf("expected contentlengt = %d got %d", test.contentLength, got)
+
+			}
 		}
 	})
 }
