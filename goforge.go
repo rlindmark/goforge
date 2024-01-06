@@ -39,31 +39,31 @@ func handleV3Files(w http.ResponseWriter, r *http.Request) {
 
 	// test that filename is legal
 	// FIXME: hansle error from function also. Maybe return the result json as the error
-	res, err := validModuleReleaseFilename(moduleReleaseFilename)
+	res, _ := validModuleReleaseFilename(moduleReleaseFilename)
 	if !res {
 		// 400
 		result := fmt.Sprintf("{\"message\": \"400 Bad Request\", \"errors\": [\"'%s' is not a valid release slug\"]}", moduleReleaseFilename)
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, result)
+		fmt.Fprint(w, result)
 		return
 	}
 
 	// check if filename exist
-	path, err := ModuleReleaseFilenameInCache(moduleReleaseFilename)
+	path, _ := ModuleReleaseFilenameInCache(moduleReleaseFilename)
 
 	// get filename from cache or error
 	file, err := os.Open(path)
-	defer file.Close()
 
 	if err != nil {
 		// 404
 		result := "{\"message\": \"404 Not Found\", \"errors\": [\"The requested resource could not be found\"]}"
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, result)
+		fmt.Fprint(w, result)
 		return
 	}
+	defer file.Close()
 
 	// set Contant-Type:
 	// w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -73,6 +73,7 @@ func handleV3Files(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+	w.Header().Set("Content-Type", "application/octet-stream; charset=utf-8")
 	http.ServeContent(w, r, fileInfo.Name(), fileInfo.ModTime(), file)
 }
 

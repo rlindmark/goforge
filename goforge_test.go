@@ -13,6 +13,7 @@ func TestValidModuleReleaseFilename(t *testing.T) {
 		expect                bool
 	}{
 		{"puppetlabs-stdlib-9.4.1.tar.gz", true},
+		{"puppetlabs-stdlib-9.4.1.targz", false},
 		{"puppetlabs-stdlib-9.4.1.tar.g", false},
 		{"puppetlabs-stdlib-9.4.1", false},
 		{"puppetlabs-stdlib-", false},
@@ -43,8 +44,8 @@ func TestV3File(t *testing.T) {
 	}{
 		{"/v3/files/puppetlabs-stdlib-9.4.1.tar.gz", 200, 161699, "ok"},
 		{"/v3/files/puppetlabs-stdlib-9.4.0.tar.gz", 200, 162679, "ok"},
-		{"/v3/files/puppetlabs-stdlib-1.0.0.tar.gz", 200, -1, "ok"},
-		{"/v3/files/puppetlabs-stdlib-1.0.0.tar", 200, -1, "ok"},
+		{"/v3/files/puppetlabs-stdlib-1.0.0.tar.gz", 404, -1, "ok"},
+		{"/v3/files/puppetlabs-stdlib-1.0.0.tar", 400, -1, "ok"},
 	}
 
 	t.Run("returns a forge module", func(t *testing.T) {
@@ -59,6 +60,7 @@ func TestV3File(t *testing.T) {
 			//got := response.Body.String()
 			got := response.Result().StatusCode
 			if got != test.statusCode {
+				t.Errorf("expected statuscode = %d got %d", test.statusCode, got)
 			}
 			got = int(response.Result().ContentLength)
 			if got != test.contentLength {
