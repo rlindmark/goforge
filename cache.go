@@ -9,11 +9,15 @@ import (
 
 const DefaultCache string = "cache"
 
+// FIXME: argument need to be a file
 func FileInCache(filename string) bool {
-	filePath := "cache/" + filename
-	_, error := os.Stat(filePath)
-	//return !os.IsNotExist(err)
-	return !errors.Is(error, os.ErrNotExist)
+	filePath := filename
+	fileInfo, error := os.Stat(filePath)
+	if error != nil {
+		return !errors.Is(error, os.ErrNotExist)
+	}
+
+	return fileInfo.Mode().IsRegular()
 }
 
 func ModulePathInCache(module_name string) (string, error) {
@@ -36,3 +40,18 @@ func ModuleReleaseFilenameInCache(module_name string) (string, error) {
 }
 
 // func FindModulesInCache()
+
+// true if filename = "puppetlabs-stdlib-1.0.0.tar.gz" exists at "cache/p/puppetlabs/puppetlabs-stdlib-1.0.0.tar.gz" and is a file
+// true if filename = "p/puppetlabs/puppetlabs-stdlib-1.0.0.tar.gz" exists at "cache/p/puppetlabs/puppetlabs-stdlib-1.0.0.tar.gz" and is a file
+func InCache(filename string) bool {
+	return false
+}
+
+func GetItemPath(filename string) (string, error) {
+	return "", fmt.Errorf("%s does not exist", filename)
+}
+
+func StoredModules() (fileList []string) {
+	fmt.Print("StoredModules: TO BE IMPLEMENTED")
+	return []string{}
+}

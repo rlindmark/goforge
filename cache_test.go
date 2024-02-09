@@ -11,20 +11,20 @@ func TestFileInCache(t *testing.T) {
 		expect      bool
 	}{
 		{"", false}, // no empty argument
-		{"p/puppetlabs/puppetlabs-stdlib-9.4.1.tar.gz", true},
-		{"p/puppetlabs/puppetlabs-stdlib-9.4.0.tar.gz", true},
-		{"p/puppetlabs/puppetlabs-stdlib-9.3.0.tar.gz", false},
-		{"p", true},
+		{"cache/p/puppetlabs/puppetlabs-stdlib-9.4.1.tar.gz", true},
+		{"cache/p/puppetlabs/puppetlabs-stdlib-9.4.0.tar.gz", true},
+		{"cache/p/puppetlabs/puppetlabs-stdlib-9.3.0.tar.gz", false},
+		{"p", false},
 	}
 
-	fmt.Print("NOTE: Make sure \"make cache\" is executed before running this test")
+	fmt.Print("NOTE: Make sure \"make cache\" is executed before running this test\n")
 
 	for _, test := range testCases {
 
 		result := FileInCache(test.module_name)
 
 		if result != test.expect {
-			t.Errorf("TestFileInCache %v: got %v, expected %v", test.module_name, result, test.expect)
+			t.Errorf("TestFileInCache module:%v, got:%v, expected:%v", test.module_name, result, test.expect)
 		}
 	}
 }
@@ -40,7 +40,7 @@ func TestModulePathInCache(t *testing.T) {
 		{"p", "cache/p/p/p"},
 	}
 
-	fmt.Print("NOTE: Make sure \"make cache\" is executed before running this test")
+	fmt.Print("NOTE: Make sure \"make cache\" is executed before running this test\n")
 
 	for _, test := range testCases {
 
