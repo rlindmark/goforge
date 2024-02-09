@@ -107,7 +107,7 @@ func get_metadata(owner_module_version string) (string, error) {
 			continue
 		case tar.TypeReg:
 			//fmt.Println("(", i, ")", "Name: ", name)
-			if name == "pdxcat-nrpe-2.1.1/metadata.json" {
+			if name == owner_module_version+"/metadata.json" {
 				metadata, err := io.ReadAll(tarReader)
 				return string(metadata), err
 			}

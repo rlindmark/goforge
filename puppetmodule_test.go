@@ -91,6 +91,24 @@ func TestAsJson(t *testing.T) {
 }
 
 func TestGet_metadata(t *testing.T) {
-	json, _ := get_metadata("pdxcat-nrpe-2.1.1")
-	fmt.Printf("json:%v", json)
+	var testCases = []struct {
+		module string
+		expect bool
+	}{
+		{"pdxcat-nrpe-2.1.1", true},
+		{"puppetlabs-stdlib-9.4.1", true},
+	}
+
+	for _, test := range testCases {
+
+		json, err := get_metadata(test.module)
+		if err != nil {
+			t.Errorf("cant get metadata for module %s, err = %s", test.module, err)
+		}
+		if json != "" {
+			fmt.Printf("json:%v", json)
+		}
+	}
+	// json, _ := get_metadata("pdxcat-nrpe-2.1.1")
+	// fmt.Printf("json:%v", json)
 }
