@@ -1,3 +1,5 @@
 goforge
 cache
 .vscode
+__debug_*
+*.swp
