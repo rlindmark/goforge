@@ -33,7 +33,7 @@ Change the default puppet config settings to point to goforge:s
 address.
 
     puppet config print module_repository    # = https://forgeapi.puppet.com
-    puppet config set http://localhost:8080
+    puppet config set module_repository http://localhost:8080
 
 Start goforge and try to download and install some module
 
@@ -47,4 +47,5 @@ Specifications loosely based on Puppet Forge v3 API (29) as found at
 Code does not implement any POST Puppet Forge API:s as the cache is managed outside of this program.
 
 Currently implements the following api endpoints.
-* /v3/files/{filename}
+
+* </v3/files/{filename}>
