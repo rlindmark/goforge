@@ -17,8 +17,6 @@ func TestFileInCache(t *testing.T) {
 		{"p", false},
 	}
 
-	fmt.Print("NOTE: Make sure \"make cache\" is executed before running this test\n")
-
 	for _, test := range testCases {
 
 		result := FileInCache(test.module_name)
@@ -39,8 +37,6 @@ func TestModulePathInCache(t *testing.T) {
 		{"puppetlabs-stdlib-9.3.0.tar.gz", "cache/p/puppetlabs/puppetlabs-stdlib-9.3.0.tar.gz"},
 		{"p", "cache/p/p/p"},
 	}
-
-	fmt.Print("NOTE: Make sure \"make cache\" is executed before running this test\n")
 
 	for _, test := range testCases {
 

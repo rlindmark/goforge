@@ -6,6 +6,8 @@ WGET_ARGS=--no-verbose
 all: test build
 
 test:
+	@echo 'NOTE: Run "make cache" at least once before running "make test"'
+	@echo '      to populate the cache with some puppet modules.'
 	go test .
 
 build:
