@@ -1,6 +1,8 @@
 package main
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
@@ -66,14 +68,77 @@ func file_md5(filename string) (string, error) {
 	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
-func read_metadata(filename string) string {
-	dat, err := os.ReadFile(filename)
+func get_metadata(owner_module_version string) (string, error) {
+
+	srcFile, _ := ModuleReleaseFilenameInCache(owner_module_version + ".tar.gz")
+	//num := 1
+	f, err := os.Open(srcFile)
 	if err != nil {
-		fmt.Printf("Cant open %s\n", filename)
-		return ""
+		//fmt.Println(err)
+		return "", err
 	}
-	return (string(dat))
+	defer f.Close()
+
+	gzf, err := gzip.NewReader(f)
+	if err != nil {
+		//fmt.Println(err)
+		return "", err
+	}
+
+	tarReader := tar.NewReader(gzf)
+
+	i := 0
+	for {
+		header, err := tarReader.Next()
+
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			//fmt.Println(err)
+			return "", err
+		}
+
+		name := header.Name
+
+		switch header.Typeflag {
+		case tar.TypeDir:
+			continue
+		case tar.TypeReg:
+			//fmt.Println("(", i, ")", "Name: ", name)
+			if name == "pdxcat-nrpe-2.1.1/metadata.json" {
+				metadata, err := io.ReadAll(tarReader)
+				return string(metadata), err
+			}
+			// if i == num {
+			// 	fmt.Println(" --- ")
+			// 	io.Copy(os.Stdout, tarReader)
+			// 	fmt.Println(" --- ")
+			// 	os.Exit(0)
+			// }
+		default:
+			fmt.Printf("%s : %c %s %s\n",
+				"Yikes! Unable to figure out type",
+				header.Typeflag,
+				"in file",
+				name,
+			)
+		}
+
+		i++
+	}
+	return "", nil
 }
+
+// func read_metadata(filename string) string {
+// 	dat, err := os.ReadFile(filename)
+// 	if err != nil {
+// 		fmt.Printf("Cant open %s\n", filename)
+// 		return ""
+// 	}
+// 	return (string(dat))
+// }
 
 // module_name is the string "owner-module-version" with no version
 func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
@@ -96,7 +161,8 @@ func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 	slug := owner_module_version
 	module, _ := NewModule(fmt.Sprintf("%s-%s", module_owner, module_name))
 	version := module_version
-	metadata := read_metadata(owner_module_version + "/metadata.json") //"{ }" // need to get this from metadata.json
+	//metadata := read_metadata(owner_module_version + "/metadata.json") //"{ }" // need to get this from metadata.json
+	metadata, _ := get_metadata(owner_module_version) //"{ }" // need to get this from metadata.json
 	tags := "[ string ]"
 	supported := "true"
 	pdk := "true"

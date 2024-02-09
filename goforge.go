@@ -252,7 +252,7 @@ func listModuleReleases(w http.ResponseWriter, r *http.Request) {
 		url_query.Add("limit", fmt.Sprint(limit))
 	}
 
-	fmt.Printf("module_name: %v", module_name)
+	//fmt.Printf("module_name: %v\n", module_name)
 
 	all_matching_modules := get_all_versions_for_module(module_name)
 
@@ -267,7 +267,7 @@ func listModuleReleases(w http.ResponseWriter, r *http.Request) {
 
 	json := []byte(response.asJSON())
 
-	fmt.Printf("json:\n%s\n", json)
+	//fmt.Printf("json:\n%s\n", json)
 	w.Write(json)
 }
 

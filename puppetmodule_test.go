@@ -89,3 +89,8 @@ func TestAsJson(t *testing.T) {
 		}
 	}
 }
+
+func TestGet_metadata(t *testing.T) {
+	json, _ := get_metadata("pdxcat-nrpe-2.1.1")
+	fmt.Printf("json:%v", json)
+}
