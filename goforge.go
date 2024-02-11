@@ -41,7 +41,7 @@ func validModuleReleaseFilename(moduleReleaseFilename string) (bool, error) {
 	if result {
 		return result, nil
 	}
-	return false, fmt.Errorf("{\"message\": \"400 Bad Request\", \"errors\": [\"'%s' is not a valid release slug\"]}", moduleReleaseFilename)
+	return false, fmt.Errorf(`{"message":"400 Bad Request","errors":["'%s' is not a valid release slug"]}`, moduleReleaseFilename)
 }
 
 func validModuleReleaseSlug(release_slug string) (bool, error) {
@@ -52,7 +52,7 @@ func validModuleReleaseSlug(release_slug string) (bool, error) {
 		return result, nil
 	}
 
-	return false, fmt.Errorf("{\"message\": \"400 Bad Request\", \"errors\": [\"'%s' is not a valid release slug\"]}", release_slug)
+	return false, fmt.Errorf(`{"message":"400 Bad Request","errors":["'%s' is not a valid release slug"]}`, release_slug)
 }
 
 func DownloadModuleRelease(w http.ResponseWriter, r *http.Request) {
@@ -81,7 +81,7 @@ func DownloadModuleRelease(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		// 404
-		result := "{\"message\": \"404 Not Found\", \"errors\": [\"The requested resource could not be found\"]}"
+		result := `{"message":"404 Not Found","errors":["The requested resource could not be found"]}`
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprint(w, result)
@@ -109,10 +109,10 @@ type V3ReleaseResponse struct {
 func (p *V3ReleaseResponse) asJSON() string {
 	json := "{"
 	pagination := p.Pagination
-	json += "\"pagination\":"
+	json += `"pagination":`
 	json += pagination.asJson()
 	json += ","
-	json += "\"results\":["
+	json += `"results":[`
 	results := p.Results
 	size := len(results)
 	for index, puppet_module := range results {

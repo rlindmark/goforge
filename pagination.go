@@ -105,21 +105,21 @@ func NewPagination(limit int, offset int, first string, previous *string, curren
 
 func (p *Pagination) asJson() string {
 	result := "{"
-	result += fmt.Sprintf("\"limit\":%d,", p.Limit)
-	result += fmt.Sprintf("\"offset\":%d,", p.Offset)
-	result += fmt.Sprintf("\"first\":%q,", p.First)
+	result += fmt.Sprintf("%q:%d,", "limit", p.Limit)
+	result += fmt.Sprintf("%q:%d,", "offset", p.Offset)
+	result += fmt.Sprintf("%q:%q,", "first", p.First)
 	if p.Previous == nil {
-		result += "\"previous\":null,"
+		result += `"previous":null,`
 	} else {
-		result += fmt.Sprintf("\"previous\":%v,", p.Previous)
+		result += fmt.Sprintf("%q:%v,", "previous", p.Previous)
 	}
-	result += fmt.Sprintf("\"current\":%q,", p.Current)
+	result += fmt.Sprintf("%q:%q,", "current", p.Current)
 	if p.Next == nil {
-		result += "\"next\":null,"
+		result += `"next":null,`
 	} else {
-		result += fmt.Sprintf("\"next\":%v,", p.Next)
+		result += fmt.Sprintf("%q:%v,", "next", p.Next)
 	}
-	result += fmt.Sprintf("\"total\":%d", p.Total)
+	result += fmt.Sprintf("%q:%d", "total", p.Total)
 	result += "}"
 
 	return result

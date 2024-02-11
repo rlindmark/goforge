@@ -71,7 +71,7 @@ func TestCreatePagination(t *testing.T) {
 		{
 			"limit=20&offset=0&name=puppetlabs-stdlib-9.0.1",
 			1,
-			"{\"limit\":20,\"offset\":0,\"first\":\"/v3/releases?offset=0&limit=20\",\"previous\":null,\"current\":\"/v3/releases?limit=20&name=puppetlabs-stdlib-9.0.1&offset=0\",\"next\":null,\"total\":1}",
+			`{"limit":20,"offset":0,"first":"/v3/releases?offset=0&limit=20","previous":null,"current":"/v3/releases?limit=20&name=puppetlabs-stdlib-9.0.1&offset=0","next":null,"total":1}`,
 			nil,
 		},
 	}
@@ -89,7 +89,7 @@ func TestCreatePagination(t *testing.T) {
 		} else {
 			result := pagination.asJson()
 			if result != test.expect {
-				fmt.Printf("Got %v, expected %v", result, test.expect)
+				fmt.Printf("Got %v, expected %v\n", result, test.expect)
 			}
 		}
 	}
@@ -107,8 +107,8 @@ func TestNewPagination(t *testing.T) {
 		total    int
 		expect   string
 	}{
-		{10, 0, "/first", nil, "/current", nil, 1,
-			"{\"limit\":10,\"offset\":0,\"first\":\"/first\",\"previous\":null,\"current\":\"/current\",\"next\":null,\"total\":1}"},
+		{10, 0, "first", nil, "/current", nil, 1,
+			`{"limit":10,"offset":0,"first":"/first","previous":null,"current":"/current","next":null,"total":1}`},
 	}
 
 	for _, test := range testCases {
@@ -117,7 +117,7 @@ func TestNewPagination(t *testing.T) {
 
 		result := pagination.asJson()
 		if result != test.expect {
-			fmt.Printf("Got %v, expected %v", result, test.expect)
+			fmt.Printf("Got %v, expected %v\n", result, test.expect)
 		}
 	}
 }

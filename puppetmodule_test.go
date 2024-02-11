@@ -28,7 +28,7 @@ func TestNewPuppetModule(t *testing.T) {
 }
 
 func errorf400(module string) error {
-	return fmt.Errorf("{\"message\": \"400 Bad Request\", \"errors\": [\"'%s' is not a valid release slug\"]}", module)
+	return fmt.Errorf(`{"message":"400 Bad Request","errors":["'%s' is not a valid release slug"]}`, module)
 }
 
 func TestValidModuleReleaseFile(t *testing.T) {

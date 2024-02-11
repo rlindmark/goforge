@@ -156,7 +156,7 @@ func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 	//ok, _ := isValidModuleName(module_name)
 	//filename := fmt.Sprintf("%s.tar.gz", owner_module_version)
 	if !FileInCache(file_in_cache) {
-		return nil, fmt.Errorf("{\"message\": \"404 Not Found\", \"errors\": [\"'The requested resource could not be found\"]}")
+		return nil, fmt.Errorf(`{"message":"404 Not Found","errors":["'The requested resource could not be found"]}`)
 	}
 	slug := owner_module_version
 	module, _ := NewModule(fmt.Sprintf("%s-%s", module_owner, module_name))
@@ -184,7 +184,7 @@ func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 	license := "License"
 	reference := "Reference"
 	docs := "{ }"
-	pe_compatibility := "[ \"string\" ]"
+	pe_compatibility := `[ "string" ]`
 	tasks := "[ ]"
 	plans := "[ ]"
 

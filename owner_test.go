@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 )
@@ -66,7 +67,7 @@ func TestOwnerAsJson(t *testing.T) {
 		expect      string
 	}{
 		{"Puppetlabs", "Slug", "Username", "Gravatar",
-			"{\"uri\":\"Puppetlabs\",\"slug\":\"Slug\",\"username\":\"Username\",\"gravatar_id\":\"Gravatar\"}",
+			`{"uri":"Puppetlabs","slug":"Slug","username":"Username","gravatar_id":"Gravatar"}`,
 		},
 	}
 
@@ -74,8 +75,9 @@ func TestOwnerAsJson(t *testing.T) {
 
 		user, _ := NewOwner(test.uri, test.slug, test.username, test.gravatar_id)
 
-		result := user.asJson()
-		if result != test.expect {
+		//result := user.asJson()
+		result, _ := json.Marshal(user)
+		if string(result) != test.expect {
 			fmt.Printf("Got %v, expected %v", result, test.expect)
 		}
 	}

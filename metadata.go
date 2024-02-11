@@ -37,16 +37,16 @@ type Dependency struct {
 
 func (m *OperatingSystemSupport) asJSON() string {
 	json := "{"
-	json += fmt.Sprintf("\"operatingsystem\":\"%s\"", m.Operatingsystem)
+	json += fmt.Sprintf(`"operatingsystem":"%s"`, m.Operatingsystem)
 
 	operatingsystemreleases := m.Operatingsystemrelease
 	size := len(operatingsystemreleases)
 	if size > 0 {
-		json += ",\"operatingsystemrelease\":["
+		json += `,"operatingsystemrelease":[`
 		operatingsystemreleases := m.Operatingsystemrelease
 		size := len(operatingsystemreleases)
 		for index, operatingsystemrelease := range operatingsystemreleases {
-			json += fmt.Sprintf("\"%v\"", operatingsystemrelease)
+			json += fmt.Sprintf(`"%v"`, operatingsystemrelease)
 			if index < size-1 {
 				json += ","
 			}
@@ -60,8 +60,8 @@ func (m *OperatingSystemSupport) asJSON() string {
 
 func (m *Requirement) asJSON() string {
 	json := "{"
-	json += fmt.Sprintf("\"name\":\"%v\",", m.Name)
-	json += fmt.Sprintf("\"version_requirement\":\"%v\",", m.Version_requirement)
+	json += fmt.Sprintf(`"name":"%v",`, m.Name)
+	json += fmt.Sprintf(`"version_requirement":"%v",`, m.Version_requirement)
 
 	json += "}"
 	return json
@@ -69,8 +69,8 @@ func (m *Requirement) asJSON() string {
 
 func (m *Dependency) asJSON() string {
 	json := "{"
-	json += fmt.Sprintf("\"name\":\"%v\",", m.Name)
-	json += fmt.Sprintf("\"version_requirement\":\"%v\",", m.Version_requirement)
+	json += fmt.Sprintf(`"name":"%v",`, m.Name)
+	json += fmt.Sprintf(`"version_requirement":"%v",`, m.Version_requirement)
 
 	json += "}"
 	return json
@@ -78,20 +78,20 @@ func (m *Dependency) asJSON() string {
 
 func (m *Metadata) asJSON() string {
 	json := "{"
-	json += fmt.Sprintf("\"name\":\"%v\",", m.Name)
-	json += fmt.Sprintf("\"version\":\"%v\",", m.Version)
-	json += fmt.Sprintf("\"author\":\"%v\",", m.Author)
-	json += fmt.Sprintf("\"summary\":\"%v\",", m.Summary)
-	json += fmt.Sprintf("\"license\":\"%v\",", m.License)
-	json += fmt.Sprintf("\"source\":\"%v\",", m.Source)
-	json += fmt.Sprintf("\"project_page\":\"%v\",", m.Project_page)
+	json += fmt.Sprintf(`"name":"%v",`, m.Name)
+	json += fmt.Sprintf(`"version":"%v",`, m.Version)
+	json += fmt.Sprintf(`"author":"%v",`, m.Author)
+	json += fmt.Sprintf(`"summary":"%v",`, m.Summary)
+	json += fmt.Sprintf(`"license":"%v",`, m.License)
+	json += fmt.Sprintf(`"source":"%v",`, m.Source)
+	json += fmt.Sprintf(`"project_page":"%v",`, m.Project_page)
 
 	if len(m.Issues_url) == 0 {
-		json += "\"issues_url\":null,"
+		json += `"issues_url":null,`
 	} else {
-		json += fmt.Sprintf("\"issues_url\":\"%v\",", m.Issues_url)
+		json += fmt.Sprintf(`"issues_url":"%v",`, m.Issues_url)
 	}
-	json += "\"dependencies\":["
+	json += `"dependencies":[`
 	dependencies := m.Dependencies
 	size := len(dependencies)
 	for index, dependency := range dependencies {
@@ -104,12 +104,12 @@ func (m *Metadata) asJSON() string {
 	json += "]"
 
 	if len(m.Data_provider) == 0 {
-		json += "\"data_provider\":null,"
+		json += `"data_provider":null,`
 	} else {
-		json += fmt.Sprintf("\"data_perovider\":\"%v\",", m.Data_provider)
+		json += fmt.Sprintf(`"data_perovider":"%v",`, m.Data_provider)
 	}
 
-	json += "\"operatingsystem_support\":["
+	json += `"operatingsystem_support":[`
 	operatingsystem_supports := m.Operatingsystem_support
 	size = len(operatingsystem_supports)
 	for index, operatingsystem_support := range operatingsystem_supports {
@@ -121,7 +121,7 @@ func (m *Metadata) asJSON() string {
 	}
 	json += "]"
 
-	json += "\"requirements\":["
+	json += `"requirements":[`
 	requirements := m.Requirements
 	size = len(requirements)
 	for index, requirement := range requirements {
