@@ -1,15 +1,16 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
 
 type Module struct {
-	Uri           string `json:"uri"`
-	Slug          string `json:"slug"`
-	Name          string `json:"name"`
-	Deprecated_at string `json:"deprecated_at"`
+	Uri           string  `json:"uri"`
+	Slug          string  `json:"slug"`
+	Name          string  `json:"name"`
+	Deprecated_at *string `json:"deprecated_at"`
 	owner         *Owner
 }
 
@@ -22,7 +23,7 @@ func NewModule(owner_module string) (*Module, error) {
 	module_slug := owner_module
 	module_name := strings.Split(owner_module, "-")[1]
 	module_owner := strings.Split(owner_module, "-")[0]
-	module_deprecated_at := ""
+	var module_deprecated_at *string = nil
 
 	owner_uri := fmt.Sprintf("/v3/users/%s", module_owner)
 	owner_slug := module_owner
@@ -38,12 +39,14 @@ func NewModule(owner_module string) (*Module, error) {
 }
 
 func (module *Module) asJson() string {
-	json := "{"
-	json += fmt.Sprintf("%q:%q,", "uri", module.Uri)
-	json += fmt.Sprintf("%q:%q,", "slug", module.Slug)
-	json += fmt.Sprintf("%q:%q,", "name", module.Name)
-	json += fmt.Sprintf("%q:null,", "deprecated_at")
-	json += fmt.Sprintf("%q:%s", "owner", module.owner.asJson())
-	json += "}"
-	return json
+	jsons := "{"
+	jsons += fmt.Sprintf("%q:%q,", "uri", module.Uri)
+	jsons += fmt.Sprintf("%q:%q,", "slug", module.Slug)
+	jsons += fmt.Sprintf("%q:%q,", "name", module.Name)
+	jsons += fmt.Sprintf("%q:null,", "deprecated_at")
+	owner_jsons, _ := json.Marshal(module.owner)
+	jsons += fmt.Sprintf("%q:%s", "owner", string(owner_jsons))
+	//json += fmt.Sprintf("%q:%s", "owner", module.owner.asJson())
+	jsons += "}"
+	return jsons
 }
