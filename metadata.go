@@ -6,12 +6,12 @@ type Metadata struct {
 	Name         string `json:"name"`
 	Version      string `json:"version"`
 	Author       string `json:"author"`
-	Summary      string `json:"summary"`
 	License      string `json:"license"`
+	Summary      string `json:"summary"`
 	Source       string `json:"source"`
 	Project_page string `json:"project_page"`
 
-	Issues_url   string       `json:"issues"`
+	Issues_url   string       `json:"issues_url"`
 	Dependencies []Dependency `json:"dependencies"`
 
 	Data_provider string `json:"data_provider"`
@@ -35,7 +35,7 @@ type Dependency struct {
 	Version_requirement string `json:"version_requirement"`
 }
 
-func (m *OperatingSystemSupport) asJSON() string {
+func (m *OperatingSystemSupport) asJson() string {
 	json := "{"
 	json += fmt.Sprintf(`"operatingsystem":"%s"`, m.Operatingsystem)
 
@@ -58,7 +58,7 @@ func (m *OperatingSystemSupport) asJSON() string {
 	return json
 }
 
-func (m *Requirement) asJSON() string {
+func (m *Requirement) asJson() string {
 	json := "{"
 	json += fmt.Sprintf(`"name":"%v",`, m.Name)
 	json += fmt.Sprintf(`"version_requirement":"%v",`, m.Version_requirement)
@@ -67,7 +67,7 @@ func (m *Requirement) asJSON() string {
 	return json
 }
 
-func (m *Dependency) asJSON() string {
+func (m *Dependency) asJson() string {
 	json := "{"
 	json += fmt.Sprintf(`"name":"%v",`, m.Name)
 	json += fmt.Sprintf(`"version_requirement":"%v",`, m.Version_requirement)
@@ -76,7 +76,7 @@ func (m *Dependency) asJSON() string {
 	return json
 }
 
-func (m *Metadata) asJSON() string {
+func (m *Metadata) asJson() string {
 	json := "{"
 	json += fmt.Sprintf(`"name":"%v",`, m.Name)
 	json += fmt.Sprintf(`"version":"%v",`, m.Version)
@@ -95,7 +95,7 @@ func (m *Metadata) asJSON() string {
 	dependencies := m.Dependencies
 	size := len(dependencies)
 	for index, dependency := range dependencies {
-		dependency_json := dependency.asJSON()
+		dependency_json := dependency.asJson()
 		json += dependency_json
 		if index < size-1 {
 			json += ","
@@ -113,7 +113,7 @@ func (m *Metadata) asJSON() string {
 	operatingsystem_supports := m.Operatingsystem_support
 	size = len(operatingsystem_supports)
 	for index, operatingsystem_support := range operatingsystem_supports {
-		operatingsystem_support_json := operatingsystem_support.asJSON()
+		operatingsystem_support_json := operatingsystem_support.asJson()
 		json += operatingsystem_support_json
 		if index < size-1 {
 			json += ","
@@ -125,14 +125,13 @@ func (m *Metadata) asJSON() string {
 	requirements := m.Requirements
 	size = len(requirements)
 	for index, requirement := range requirements {
-		requirement_json := requirement.asJSON()
+		requirement_json := requirement.asJson()
 		json += requirement_json
 		if index < size-1 {
 			json += ","
 		}
 	}
 	json += "]"
-
 	json += "}"
 	return json
 }
