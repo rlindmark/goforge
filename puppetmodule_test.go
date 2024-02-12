@@ -106,7 +106,7 @@ func TestGet_metadata(t *testing.T) {
 			t.Errorf("cant get metadata for module %s, err = %s", test.module, err)
 		}
 		if json != "" {
-			fmt.Printf("json:%v", json)
+			fmt.Printf("json:%v", string(json))
 		}
 	}
 	// json, _ := get_metadata("pdxcat-nrpe-2.1.1")
