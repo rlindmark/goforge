@@ -6,6 +6,7 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -13,15 +14,15 @@ import (
 )
 
 type PuppetModule struct {
-	Uri              string  `json:"uri"`  // "/v3/releases/puppetlabs-apache-4.0.0"
-	Slug             string  `json:"slug"` // "puppetlabs-apache-4.0.0"
-	Module           *Module `json:"module"`
-	Version          string  `json:"version"`
-	Metadata         string  `json:"metadata"`
-	Tags             string  `json:"tags"`
-	Supported        string  `json:"supported"`
-	Pdk              string  `json:"pdk"`
-	Validation_Score int     `json:"validation_score"`
+	Uri              string          `json:"uri"`  // "/v3/releases/puppetlabs-apache-4.0.0"
+	Slug             string          `json:"slug"` // "puppetlabs-apache-4.0.0"
+	Module           *Module         `json:"module"`
+	Version          string          `json:"version"`
+	Metadata         json.RawMessage `json:"metadata"`
+	Tags             string          `json:"tags"`
+	Supported        bool            `json:"supported"`
+	Pdk              string          `json:"pdk"`
+	Validation_Score int             `json:"validation_score"`
 
 	File_uri         string `json:"file_uri"` // "/v3/files/puppetlabs-apache-4.0.0.tar.gz"
 	File_size        int64  `json:"file_size"`
@@ -68,6 +69,11 @@ func file_md5(filename string) (string, error) {
 	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
+func get_metadataJSON(owner_module_version string) (json.RawMessage, error) {
+	rawJSON, err := get_metadata(owner_module_version)
+	return []byte(rawJSON), err
+}
+
 func get_metadata(owner_module_version string) (string, error) {
 
 	srcFile, _ := ModuleReleaseFilenameInCache(owner_module_version + ".tar.gz")
@@ -111,12 +117,6 @@ func get_metadata(owner_module_version string) (string, error) {
 				metadata, err := io.ReadAll(tarReader)
 				return string(metadata), err
 			}
-			// if i == num {
-			// 	fmt.Println(" --- ")
-			// 	io.Copy(os.Stdout, tarReader)
-			// 	fmt.Println(" --- ")
-			// 	os.Exit(0)
-			// }
 		default:
 			fmt.Printf("%s : %c %s %s\n",
 				"Yikes! Unable to figure out type",
@@ -161,12 +161,14 @@ func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 	slug := owner_module_version
 	module, _ := NewModule(fmt.Sprintf("%s-%s", module_owner, module_name))
 	version := module_version
-	//metadata := read_metadata(owner_module_version + "/metadata.json") //"{ }" // need to get this from metadata.json
-	metadata, _ := get_metadata(owner_module_version) //"{ }" // need to get this from metadata.json
+
+	// FIXME: See TODO on metadatat and json.Marshal()
+	//metadata, _ := get_metadata(owner_module_version) // need to get this from metadata.json
+	metadata, _ := get_metadataJSON(owner_module_version) // need to get this from metadata.json
 	tags := "[ string ]"
-	supported := "true"
+	supported := true
 	pdk := "true"
-	validation_score := 100 // dont know how to set this
+	validation_score := 100 // just fake it
 
 	file_uri := fmt.Sprintf("/v3/files/%s", owner_module_version_tgz)
 
@@ -188,40 +190,47 @@ func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 	tasks := "[ ]"
 	plans := "[ ]"
 
-	// if !ok {
-	// 	return nil, fmt.Errorf("cant create module with invalid uri: %v", uri)
-	// }
-	puppetmodule := PuppetModule{uri, slug, module, version, metadata, tags, supported, pdk, validation_score, file_uri, file_size, file_md5,
-		file_sha256, downloads, readme, changelog, license, reference, docs, pe_compatibility, tasks, plans}
+	puppetmodule := PuppetModule{uri, slug, module, version, metadata, tags,
+		supported, pdk, validation_score, file_uri,
+		file_size, file_md5, file_sha256, downloads,
+		readme, changelog, license, reference, docs,
+		pe_compatibility, tasks, plans}
 
 	return &puppetmodule, nil
 }
 
-func (module *PuppetModule) asJson() string {
-	json := "{"
-	json += fmt.Sprintf("%q:%q,", "uri", module.Uri)
-	json += fmt.Sprintf("%q:%q,", "slug", module.Slug)
-	json += fmt.Sprintf("%q:%s,", "module", module.Module.asJson())
-	json += fmt.Sprintf("%q:%q,", "version", module.Version)
-	json += fmt.Sprintf("%q:%s,", "metadata", module.Metadata)
-	json += fmt.Sprintf("%q:%q,", "tags", module.Tags)
-	json += fmt.Sprintf("%q:%s,", "supported", module.Supported)
-	json += fmt.Sprintf("%q:%s,", "pdk", module.Pdk)
-	json += fmt.Sprintf("%q:%d,", "validation_score", module.Validation_Score)
+// func (m PuppetModule) MarshalJSON() ([]byte, error) {
+// 	a, err := json.Marshal(m.asJson())
+// 	return a, err
+// }
 
-	json += fmt.Sprintf("%q:%q,", "file_uri", module.File_uri)
-	json += fmt.Sprintf("%q:%d,", "file_size", module.File_size)
-	json += fmt.Sprintf("%q:%q,", "file_md5", module.File_md5)
-	json += fmt.Sprintf("%q:%q,", "file_sha256", module.File_sha256)
-	json += fmt.Sprintf("%q:%d,", "downloads", module.Downloads)
-	json += fmt.Sprintf("%q:%q,", "readme", module.Readme)
-	json += fmt.Sprintf("%q:%q,", "changelog", module.Changelog)
-	json += fmt.Sprintf("%q:%q,", "license", module.License)
-	json += fmt.Sprintf("%q:%q,", "reference", module.Reference)
-	json += fmt.Sprintf("%q:%q,", "docs", module.Docs)
-	json += fmt.Sprintf("%q:%q,", "pe_compatibility", module.Pe_compatibility)
-	json += fmt.Sprintf("%q:%q,", "tasks", module.Tasks)
-	json += fmt.Sprintf("%q:%q", "plans", module.Plans)
+func (m *PuppetModule) asJson() string {
+	// ret, _ := json.Marshal(m)
+	// return string(ret)
+	json := "{"
+	json += fmt.Sprintf("%q:%q,", "uri", m.Uri)
+	json += fmt.Sprintf("%q:%q,", "slug", m.Slug)
+	json += fmt.Sprintf("%q:%s,", "module", m.Module.asJson())
+	json += fmt.Sprintf("%q:%q,", "version", m.Version)
+	json += fmt.Sprintf("%q:%s,", "metadata", m.Metadata)
+	json += fmt.Sprintf("%q:%q,", "tags", m.Tags)
+	json += fmt.Sprintf("%q:%v,", "supported", m.Supported)
+	json += fmt.Sprintf("%q:%s,", "pdk", m.Pdk)
+	json += fmt.Sprintf("%q:%d,", "validation_score", m.Validation_Score)
+
+	json += fmt.Sprintf("%q:%q,", "file_uri", m.File_uri)
+	json += fmt.Sprintf("%q:%d,", "file_size", m.File_size)
+	json += fmt.Sprintf("%q:%q,", "file_md5", m.File_md5)
+	json += fmt.Sprintf("%q:%q,", "file_sha256", m.File_sha256)
+	json += fmt.Sprintf("%q:%d,", "downloads", m.Downloads)
+	json += fmt.Sprintf("%q:%q,", "readme", m.Readme)
+	json += fmt.Sprintf("%q:%q,", "changelog", m.Changelog)
+	json += fmt.Sprintf("%q:%q,", "license", m.License)
+	json += fmt.Sprintf("%q:%q,", "reference", m.Reference)
+	json += fmt.Sprintf("%q:%q,", "docs", m.Docs)
+	json += fmt.Sprintf("%q:%q,", "pe_compatibility", m.Pe_compatibility)
+	json += fmt.Sprintf("%q:%q,", "tasks", m.Tasks)
+	json += fmt.Sprintf("%q:%q", "plans", m.Plans)
 	json += "}"
 	return json
 }

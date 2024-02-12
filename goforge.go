@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html"
 	"log"
@@ -265,10 +266,14 @@ func listModuleReleases(w http.ResponseWriter, r *http.Request) {
 
 	response := V3ReleaseResponse{Pagination: pagination, Results: results}
 
-	json := []byte(response.asJSON())
+	jSON, err := json.Marshal(response)
+	if err != nil {
+		fmt.Printf("Unable to marshal. error:%v", err)
+	}
+	//jSON := []byte(response.asJSON())
 
-	//fmt.Printf("json:\n%s\n", json)
-	w.Write(json)
+	fmt.Printf("json:\n%s\n", jSON)
+	w.Write(jSON)
 }
 
 func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
@@ -303,9 +308,11 @@ func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err)
 		return
 	}
-	json := module.asJson()
+	jSON, _ := json.Marshal(module)
+	//jSON := module.asJson()
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	fmt.Fprint(w, json)
+	fmt.Printf("json:%v", jSON)
+	fmt.Fprint(w, jSON)
 }
 
 const DefaultForgeIp = "127.0.0.1"
