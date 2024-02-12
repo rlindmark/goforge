@@ -24,6 +24,8 @@ cache: cache_init
 	    https://forge.puppet.com/v3/files/puppetlabs-stdlib-9.4.1.tar.gz
 	wget $(WGET_ARGS) -O $(FORGE_CACHE)/p/puppetlabs/puppetlabs-stdlib-9.4.0.tar.gz \
 	    https://forge.puppet.com/v3/files/puppetlabs-stdlib-9.4.0.tar.gz
+	wget $(WGET_ARGS) -O $(FORGE_CACHE)/p/puppetlabs/puppetlabs-concat-9.0.2.tar.gz \
+	    https://forge.puppet.com/v3/files/puppetlabs-concat-9.0.2.tar.gz
 	wget $(WGET_ARGS) -O $(FORGE_CACHE)/p/pdxcat/pdxcat-nrpe-2.1.1.tar.gz \
 	    https://forge.puppet.com/v3/files/pdxcat-nrpe-2.1.1.tar.gz
 
