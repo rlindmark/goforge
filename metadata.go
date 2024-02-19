@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 type Metadata struct {
 	Name         string `json:"name"`
 	Version      string `json:"version"`
@@ -35,103 +33,103 @@ type Dependency struct {
 	Version_requirement string `json:"version_requirement"`
 }
 
-func (m *OperatingSystemSupport) asJson() string {
-	json := "{"
-	json += fmt.Sprintf(`"operatingsystem":"%s"`, m.Operatingsystem)
+// func (m *OperatingSystemSupport) asJSON() string {
+// 	json := "{"
+// 	json += fmt.Sprintf(`%q:%q`, "operatingsystem", m.Operatingsystem)
 
-	operatingsystemreleases := m.Operatingsystemrelease
-	size := len(operatingsystemreleases)
-	if size > 0 {
-		json += `,"operatingsystemrelease":[`
-		operatingsystemreleases := m.Operatingsystemrelease
-		size := len(operatingsystemreleases)
-		for index, operatingsystemrelease := range operatingsystemreleases {
-			json += fmt.Sprintf(`"%v"`, operatingsystemrelease)
-			if index < size-1 {
-				json += ","
-			}
-		}
-	}
-	json += "]"
-	json += "}"
+// 	operatingsystemreleases := m.Operatingsystemrelease
+// 	size := len(operatingsystemreleases)
+// 	if size > 0 {
+// 		json += `,"operatingsystemrelease":[`
+// 		operatingsystemreleases := m.Operatingsystemrelease
+// 		size := len(operatingsystemreleases)
+// 		for index, operatingsystemrelease := range operatingsystemreleases {
+// 			json += fmt.Sprintf(`%q`, operatingsystemrelease)
+// 			if index < (size - 1) {
+// 				json += ","
+// 			}
+// 		}
+// 	}
+// 	json += "]"
+// 	json += "}"
 
-	return json
-}
+// 	return json
+// }
 
-func (m *Requirement) asJson() string {
-	json := "{"
-	json += fmt.Sprintf(`"name":"%v",`, m.Name)
-	json += fmt.Sprintf(`"version_requirement":"%v",`, m.Version_requirement)
+// func (m *Requirement) asJSON() string {
+// 	json := "{"
+// 	json += fmt.Sprintf(`%q:%q`, "name", m.Name)
+// 	json += fmt.Sprintf(`%q:%q`, "version_requirement", m.Version_requirement)
 
-	json += "}"
-	return json
-}
+// 	json += "}"
+// 	return json
+// }
 
-func (m *Dependency) asJson() string {
-	json := "{"
-	json += fmt.Sprintf(`"name":"%v",`, m.Name)
-	json += fmt.Sprintf(`"version_requirement":"%v",`, m.Version_requirement)
+// func (m *Dependency) asJSON() string {
+// 	json := "{"
+// 	json += fmt.Sprintf(`%q:%q`, "name", m.Name)
+// 	json += fmt.Sprintf(`%q:%q`, "version_requirement", m.Version_requirement)
 
-	json += "}"
-	return json
-}
+// 	json += "}"
+// 	return json
+// }
 
-func (m *Metadata) asJson() string {
-	json := "{"
-	json += fmt.Sprintf(`"name":"%v",`, m.Name)
-	json += fmt.Sprintf(`"version":"%v",`, m.Version)
-	json += fmt.Sprintf(`"author":"%v",`, m.Author)
-	json += fmt.Sprintf(`"summary":"%v",`, m.Summary)
-	json += fmt.Sprintf(`"license":"%v",`, m.License)
-	json += fmt.Sprintf(`"source":"%v",`, m.Source)
-	json += fmt.Sprintf(`"project_page":"%v",`, m.Project_page)
+// func (m *Metadata) asJSON() string {
+// 	json := "{"
+// 	json += fmt.Sprintf(`%q:%q`, "name", m.Name)
+// 	json += fmt.Sprintf(`%q:%q`, "version", m.Version)
+// 	json += fmt.Sprintf(`%q:%q`, "author", m.Author)
+// 	json += fmt.Sprintf(`%q:%q`, "summary", m.Summary)
+// 	json += fmt.Sprintf(`%q:%q`, "license", m.License)
+// 	json += fmt.Sprintf(`%q:%q`, "source", m.Source)
+// 	json += fmt.Sprintf(`%q:%q`, "project_page", m.Project_page)
 
-	if len(m.Issues_url) == 0 {
-		json += `"issues_url":null,`
-	} else {
-		json += fmt.Sprintf(`"issues_url":"%v",`, m.Issues_url)
-	}
-	json += `"dependencies":[`
-	dependencies := m.Dependencies
-	size := len(dependencies)
-	for index, dependency := range dependencies {
-		dependency_json := dependency.asJson()
-		json += dependency_json
-		if index < size-1 {
-			json += ","
-		}
-	}
-	json += "]"
+// 	if len(m.Issues_url) == 0 {
+// 		json += `"issues_url":null,`
+// 	} else {
+// 		json += fmt.Sprintf(`%q:%q`, "issues_url", m.Issues_url)
+// 	}
+// 	json += `"dependencies":[`
+// 	dependencies := m.Dependencies
+// 	size := len(dependencies)
+// 	for index, dependency := range dependencies {
+// 		dependency_json := dependency.asJSON()
+// 		json += dependency_json
+// 		if index < size-1 {
+// 			json += ","
+// 		}
+// 	}
+// 	json += "]"
 
-	if len(m.Data_provider) == 0 {
-		json += `"data_provider":null,`
-	} else {
-		json += fmt.Sprintf(`"data_perovider":"%v",`, m.Data_provider)
-	}
+// 	if len(m.Data_provider) == 0 {
+// 		json += `"data_provider":null,`
+// 	} else {
+// 		json += fmt.Sprintf(`%q:%q`, "data_perovider", m.Data_provider)
+// 	}
 
-	json += `"operatingsystem_support":[`
-	operatingsystem_supports := m.Operatingsystem_support
-	size = len(operatingsystem_supports)
-	for index, operatingsystem_support := range operatingsystem_supports {
-		operatingsystem_support_json := operatingsystem_support.asJson()
-		json += operatingsystem_support_json
-		if index < size-1 {
-			json += ","
-		}
-	}
-	json += "]"
+// 	json += `"operatingsystem_support":[`
+// 	operatingsystem_supports := m.Operatingsystem_support
+// 	size = len(operatingsystem_supports)
+// 	for index, operatingsystem_support := range operatingsystem_supports {
+// 		operatingsystem_support_json := operatingsystem_support.asJSON()
+// 		json += operatingsystem_support_json
+// 		if index < (size - 1) {
+// 			json += ","
+// 		}
+// 	}
+// 	json += "]"
 
-	json += `"requirements":[`
-	requirements := m.Requirements
-	size = len(requirements)
-	for index, requirement := range requirements {
-		requirement_json := requirement.asJson()
-		json += requirement_json
-		if index < size-1 {
-			json += ","
-		}
-	}
-	json += "]"
-	json += "}"
-	return json
-}
+// 	json += `"requirements":[`
+// 	requirements := m.Requirements
+// 	size = len(requirements)
+// 	for index, requirement := range requirements {
+// 		requirement_json := requirement.asJson()
+// 		json += requirement_json
+// 		if index < size-1 {
+// 			json += ","
+// 		}
+// 	}
+// 	json += "]"
+// 	json += "}"
+// 	return json
+// }

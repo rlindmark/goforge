@@ -204,13 +204,13 @@ func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 // 	return a, err
 // }
 
-func (m *PuppetModule) asJson() string {
+func (m *PuppetModule) asJSON() string {
 	// ret, _ := json.Marshal(m)
 	// return string(ret)
 	json := "{"
 	json += fmt.Sprintf("%q:%q,", "uri", m.Uri)
 	json += fmt.Sprintf("%q:%q,", "slug", m.Slug)
-	json += fmt.Sprintf("%q:%s,", "module", m.Module.asJson())
+	json += fmt.Sprintf("%q:%s,", "module", m.Module.asJSON())
 	json += fmt.Sprintf("%q:%q,", "version", m.Version)
 	json += fmt.Sprintf("%q:%s,", "metadata", m.Metadata)
 	json += fmt.Sprintf("%q:%q,", "tags", m.Tags)

@@ -13,9 +13,8 @@ func TestMetadata(t *testing.T) {
 		metadata_file string
 		expect        bool
 	}{
-		//{"tests/m.json", true},
-		{"tests/metadata.json", true},
-		{"tests/metadata1.json", true},
+		{"testdata/metadata.json", true},
+		{"testdata/metadata1.json", true},
 	}
 
 	for _, test := range testCases {

@@ -87,7 +87,7 @@ func TestCreatePagination(t *testing.T) {
 		if err != nil {
 			fmt.Printf("error %v\n", err)
 		} else {
-			result := pagination.asJson()
+			result := pagination.asJSON()
 			if result != test.expect {
 				fmt.Printf("Got %v, expected %v\n", result, test.expect)
 			}
@@ -115,7 +115,7 @@ func TestNewPagination(t *testing.T) {
 
 		pagination, _ := NewPagination(test.limit, test.offset, test.first, test.previous, test.current, test.next, test.total)
 
-		result := pagination.asJson()
+		result := pagination.asJSON()
 		if result != test.expect {
 			fmt.Printf("Got %v, expected %v\n", result, test.expect)
 		}

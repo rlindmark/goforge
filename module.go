@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -14,13 +15,29 @@ type Module struct {
 	owner         *Owner
 }
 
+func isValidModuleSlug(slug string) (bool, error) {
+	// ^[a-zA-Z0-9]+[-\/][a-z][a-z0-9_]*$
+	return regexp.MatchString("^[a-zA-Z0-9]+[-/][a-z][a-z0-9_]*$", slug)
+}
+
+func isValidModuleName(name string) (bool, error) {
+	// ^[a-z][a-z0-9_]*$
+	return regexp.MatchString("^[a-z][a-z0-9_]*$", name)
+}
+
 // module_name is the string "owner-module" with no version
 func NewModule(owner_module string) (*Module, error) {
 	// uri = /v3/releases/puppetlabs-apache-4.0.0
 	//ok, _ := isValidModuleName(module_name)
 
+	ok, _ := isValidModuleSlug(owner_module)
+	if !ok {
+		return nil, fmt.Errorf("not a valid module slug:%v", owner_module)
+	}
+	// isValidModuleName ^[a-z][a-z0-9_]*$
 	module_uri := fmt.Sprintf("/v3/modules/%s", owner_module)
 	module_slug := owner_module
+	// FIXME: need to validate owner_module
 	module_name := strings.Split(owner_module, "-")[1]
 	module_owner := strings.Split(owner_module, "-")[0]
 	var module_deprecated_at *string = nil
@@ -29,24 +46,24 @@ func NewModule(owner_module string) (*Module, error) {
 	owner_slug := module_owner
 	owner_username := module_owner
 	owner_gravatar_id := "nogravatar"
-	owner, _ := NewOwner(owner_uri, owner_slug, owner_username, owner_gravatar_id)
+	owner, err := NewOwner(owner_uri, owner_slug, owner_username, owner_gravatar_id)
+	if err != nil {
+		return nil, fmt.Errorf("cant create module with invalid uri:%v. Err=%v", owner_uri, err)
+	}
 
-	// if !ok {
-	// 	return nil, fmt.Errorf("cant create module with invalid uri: %v", uri)
-	// }
 	module := Module{module_uri, module_slug, module_name, module_deprecated_at, owner}
 	return &module, nil
 }
 
-func (module *Module) asJson() string {
-	jsons := "{"
-	jsons += fmt.Sprintf("%q:%q,", "uri", module.Uri)
-	jsons += fmt.Sprintf("%q:%q,", "slug", module.Slug)
-	jsons += fmt.Sprintf("%q:%q,", "name", module.Name)
-	jsons += fmt.Sprintf("%q:null,", "deprecated_at")
-	owner_jsons, _ := json.Marshal(module.owner)
-	jsons += fmt.Sprintf("%q:%s", "owner", string(owner_jsons))
+func (module *Module) asJSON() string {
+	jSon := "{"
+	jSon += fmt.Sprintf("%q:%q,", "uri", module.Uri)
+	jSon += fmt.Sprintf("%q:%q,", "slug", module.Slug)
+	jSon += fmt.Sprintf("%q:%q,", "name", module.Name)
+	jSon += fmt.Sprintf("%q:null,", "deprecated_at")
+	owner_jSon, _ := json.Marshal(module.owner)
+	jSon += fmt.Sprintf("%q:%s", "owner", string(owner_jSon))
 	//json += fmt.Sprintf("%q:%s", "owner", module.owner.asJson())
-	jsons += "}"
-	return jsons
+	jSon += "}"
+	return jSon
 }

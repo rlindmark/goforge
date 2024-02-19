@@ -103,7 +103,7 @@ func NewPagination(limit int, offset int, first string, previous *string, curren
 	return Pagination{limit, offset, first, previous, current, next, total}, nil
 }
 
-func (p *Pagination) asJson() string {
+func (p *Pagination) asJSON() string {
 	result := "{"
 	result += fmt.Sprintf("%q:%d,", "limit", p.Limit)
 	result += fmt.Sprintf("%q:%d,", "offset", p.Offset)

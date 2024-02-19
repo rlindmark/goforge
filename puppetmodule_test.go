@@ -68,7 +68,7 @@ func TestValidModuleReleaseFile(t *testing.T) {
 	}
 
 }
-func TestAsJson(t *testing.T) {
+func TestAsJSON(t *testing.T) {
 
 	var testCases = []struct {
 		uri    string
@@ -85,7 +85,7 @@ func TestAsJson(t *testing.T) {
 			t.Errorf("cant create module %s, err = %s", test.uri, err)
 		}
 		if result != nil {
-			fmt.Print(result.asJson())
+			fmt.Print(result.asJSON())
 		}
 	}
 }

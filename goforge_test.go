@@ -113,7 +113,7 @@ func TestFetchModuleRelease(t *testing.T) {
 		{"/v3/releases/puppetlabs-stdlib-9.4.1", 200, 161699, "ok"},
 		{"/v3/releases/puppetlabs-stdlib-9.4.0", 200, 162679, "ok"},
 		{"/v3/releases/puppetlabs-stdlib-1.0.0", 404, -1, "ok"},
-		{"/v3/releases/puppetlabs-stdlib-1.0.0", 400, -1, "ok"},
+		{"/v3/releases/puppetlabs-stdlib-1.0.0", 404, -1, "ok"},
 	}
 
 	t.Run("returns a forge module", func(t *testing.T) {
@@ -132,7 +132,7 @@ func TestFetchModuleRelease(t *testing.T) {
 			}
 			got = int(response.Result().ContentLength)
 			if got != test.contentLength {
-				t.Errorf("expected contentlengt = %d got %d", test.contentLength, got)
+				t.Errorf("path:%v expected content lengt = %d got %d", test.path, test.contentLength, got)
 
 			}
 		}

@@ -107,28 +107,28 @@ type V3ReleaseResponse struct {
 	Results    []PuppetModule `json:"results"`
 }
 
-func (p *V3ReleaseResponse) asJSON() string {
-	json := "{"
-	pagination := p.Pagination
-	json += `"pagination":`
-	json += pagination.asJson()
-	json += ","
-	json += `"results":[`
-	results := p.Results
-	size := len(results)
-	for index, puppet_module := range results {
-		puppet_module_json := puppet_module.asJson()
-		json += puppet_module_json
-		// add a comma (,) between all items except last one
-		if index < size-1 {
-			json += ","
-		}
-	}
-	json += "]"
-	json += "}"
+// func (p *V3ReleaseResponse) asJSON() string {
+// 	json := "{"
+// 	pagination := p.Pagination
+// 	json += `"pagination":`
+// 	json += pagination.asJSON()
+// 	json += ","
+// 	json += `"results":[`
+// 	results := p.Results
+// 	size := len(results)
+// 	for index, puppet_module := range results {
+// 		puppet_module_json := puppet_module.asJSON()
+// 		json += puppet_module_json
+// 		// add a comma (,) between all items except last one
+// 		if index < size-1 {
+// 			json += ","
+// 		}
+// 	}
+// 	json += "]"
+// 	json += "}"
 
-	return json
-}
+// 	return json
+// }
 
 // FIXME: fix comment for this function
 func SplitModuleName(puppetmodule string) (string, string, string, error) {
@@ -272,7 +272,7 @@ func listModuleReleases(w http.ResponseWriter, r *http.Request) {
 	}
 	//jSON := []byte(response.asJSON())
 
-	fmt.Printf("json:\n%s\n", jSON)
+	//fmt.Printf("listModuleReleases:json:\n%s\n", string(jSON))
 	w.Write(jSON)
 }
 
@@ -311,7 +311,7 @@ func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
 	jSON, _ := json.Marshal(module)
 	//jSON := module.asJson()
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	fmt.Printf("json:%v", jSON)
+	//fmt.Printf("FetchModuleRelease:json:%v", string(jSON))
 	fmt.Fprint(w, jSON)
 }
 

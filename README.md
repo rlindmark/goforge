@@ -13,7 +13,7 @@ are locally cached.
 
 All puppet modules are stored in a local cache-directory structure as follows
 
-    ${CACHE_ROOT}/{module_hash}/module_owner/{module_owner}-{modulename}-version.tar.gz
+    ${CACHE_ROOT}/{module_hash}/module_owner/{module_owner}-{modulename}-{version}.tar.gz
 
 The `module_hash` is the first character of the module_owner string.
 
@@ -46,6 +46,7 @@ Specifications loosely based on Puppet Forge v3 API (29) as found at
 
 Code does not implement any POST Puppet Forge API:s as the cache is managed outside of this program.
 
-Currently implements the following api endpoints.
+Currently implements some parts of the following api endpoints.
 
 * </v3/files/{filename}>
+* </v3/releases/>
