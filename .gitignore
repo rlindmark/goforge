@@ -3,3 +3,4 @@ cache
 .vscode
 __debug_*
 *.swp
+.bash_history
