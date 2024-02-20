@@ -73,12 +73,12 @@ func TestOwnerAsJson(t *testing.T) {
 
 	for _, test := range testCases {
 
-		user, _ := NewOwner(test.uri, test.slug, test.username, test.gravatar_id)
+		owner, _ := NewOwner(test.uri, test.slug, test.username, test.gravatar_id)
 
 		//result := user.asJson()
-		result, _ := json.Marshal(user)
+		result, _ := json.Marshal(owner)
 		if string(result) != test.expect {
-			fmt.Printf("Got %v, expected %v", result, test.expect)
+			fmt.Printf("TestOwnerAsJson:Got %v, expected %v", result, test.expect)
 		}
 	}
 }
