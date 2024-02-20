@@ -23,13 +23,3 @@ func NewOwner(uri string, slug string, username string, gravatar_id string) (*Ow
 	}
 	return &Owner{uri, slug, username, gravatar_id}, nil
 }
-
-// func (owner *Owner) asJson() string {
-// 	json := "{"
-// 	json += fmt.Sprintf("%q:%q,", "uri", owner.Uri)
-// 	json += fmt.Sprintf("%q:%q,", "slug", owner.Slug)
-// 	json += fmt.Sprintf("%q:%q,", "username", owner.Username)
-// 	json += fmt.Sprintf("%q:%q", "gravatar_id", owner.Gravatar_id)
-// 	json += "}"
-// 	return json
-// }
