@@ -35,7 +35,6 @@ func TestMetadata(t *testing.T) {
 		if err != nil {
 			t.Errorf("unable to unmarshal %v\n", filename)
 		}
-		//fmt.Println(metadata.asJSON())
 		json, _ := json.Marshal(metadata)
 		fmt.Println(string(json))
 		// if string(bytesValue) != string(json) {
