@@ -93,7 +93,6 @@ func TestCreatePagination(t *testing.T) {
 			}
 		} else {
 			result, _ := json.Marshal(pagination)
-			//result := pagination.asJSON()
 			if string(result) != test.expect {
 				t.Errorf("TestCreatePagination: Got %v, expected %v\n", string(result), test.expect)
 			}
@@ -121,9 +120,12 @@ func TestNewPagination(t *testing.T) {
 
 		pagination, _ := NewPagination(test.limit, test.offset, test.first, test.previous, test.current, test.next, test.total)
 
-		result := pagination.asJSON()
-		if result != test.expect {
-			t.Errorf("got %s, expected %s\n", result, test.expect)
+		result, err := json.Marshal(pagination)
+		if err != nil {
+			t.Errorf("unable to marshal result=%v, err=%v", result, err)
+		}
+		if string(result) != test.expect {
+			t.Errorf("got %s, expected %s\n", string(result), test.expect)
 		}
 	}
 }

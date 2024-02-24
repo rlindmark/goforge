@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 )
@@ -68,7 +69,7 @@ func TestValidModuleReleaseFile(t *testing.T) {
 	}
 
 }
-func TestAsJSON(t *testing.T) {
+func TestPuppetModuleMarshal(t *testing.T) {
 
 	var testCases = []struct {
 		uri    string
@@ -84,8 +85,9 @@ func TestAsJSON(t *testing.T) {
 		if err != nil && test.expect == true {
 			t.Errorf("cant create module %s, err = %s", test.uri, err)
 		}
-		if result != nil {
-			fmt.Print(result.asJSON())
+		jSON, _ := json.Marshal(result)
+		if jSON != nil {
+			fmt.Print(string(jSON))
 		}
 	}
 }
@@ -109,6 +111,4 @@ func TestGet_metadata(t *testing.T) {
 			fmt.Printf("json:%v", string(json))
 		}
 	}
-	// json, _ := get_metadata("pdxcat-nrpe-2.1.1")
-	// fmt.Printf("json:%v", json)
 }

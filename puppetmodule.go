@@ -162,8 +162,6 @@ func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 	module, _ := NewModule(fmt.Sprintf("%s-%s", module_owner, module_name))
 	version := module_version
 
-	// FIXME: See TODO on metadatat and json.Marshal()
-	//metadata, _ := get_metadata(owner_module_version) // need to get this from metadata.json
 	metadata, _ := get_metadataJSON(owner_module_version) // need to get this from metadata.json
 	tags := "[ string ]"
 	supported := true
@@ -197,9 +195,4 @@ func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 		pe_compatibility, tasks, plans}
 
 	return &puppetmodule, nil
-}
-
-func (m *PuppetModule) asJSON() string {
-	ret, _ := json.Marshal(m)
-	return string(ret)
 }

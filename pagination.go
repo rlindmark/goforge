@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -102,28 +101,4 @@ func CreatePagination(query url.Values, total int) (*Pagination, error) {
 
 func NewPagination(limit int, offset int, first string, previous *string, current string, next *string, total int) (Pagination, error) {
 	return Pagination{limit, offset, first, previous, current, next, total}, nil
-}
-
-func (p *Pagination) asJSON() string {
-	ret, _ := json.Marshal(p)
-	return string(ret)
-	// result := "{"
-	// result += fmt.Sprintf("%q:%d,", "limit", p.Limit)
-	// result += fmt.Sprintf("%q:%d,", "offset", p.Offset)
-	// result += fmt.Sprintf("%q:%q,", "first", p.First)
-	// if p.Previous == nil {
-	// 	result += `"previous":null,`
-	// } else {
-	// 	result += fmt.Sprintf("%q:%v,", "previous", p.Previous)
-	// }
-	// result += fmt.Sprintf("%q:%q,", "current", p.Current)
-	// if p.Next == nil {
-	// 	result += `"next":null,`
-	// } else {
-	// 	result += fmt.Sprintf("%q:%v,", "next", p.Next)
-	// }
-	// result += fmt.Sprintf("%q:%d", "total", p.Total)
-	// result += "}"
-
-	// return result
 }

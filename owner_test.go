@@ -57,7 +57,7 @@ func TestNewOwner(t *testing.T) {
 	}
 }
 
-func TestOwnerAsJSON(t *testing.T) {
+func TestOwnerMarshal(t *testing.T) {
 
 	var testCases = []struct {
 		uri         string

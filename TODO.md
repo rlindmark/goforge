@@ -17,10 +17,6 @@ Sample list of things to do.
     sudo apt-get update
     sudo apt-get install pdk
 
-* Try to use json.Marshal() instead of toJson()
-
-* Remove all asJSON() functions when done
-
 * Investigate if get_v3_releases_module_result() is the same as
   "Fetch Module" from the API specification.
 
