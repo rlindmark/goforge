@@ -17,7 +17,7 @@ Sample list of things to do.
     sudo apt-get update
     sudo apt-get install pdk
 
-* Try to use json.Marshal() istead of toJson()
+* Try to use json.Marshal() instead of toJson()
 
 * Remove all asJSON() functions when done
 

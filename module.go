@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"regexp"
 	"strings"
@@ -53,17 +52,4 @@ func NewModule(owner_module string) (*Module, error) {
 
 	module := Module{module_uri, module_slug, module_name, module_deprecated_at, owner}
 	return &module, nil
-}
-
-func (module *Module) asJSON() string {
-	jSon := "{"
-	jSon += fmt.Sprintf("%q:%q,", "uri", module.Uri)
-	jSon += fmt.Sprintf("%q:%q,", "slug", module.Slug)
-	jSon += fmt.Sprintf("%q:%q,", "name", module.Name)
-	jSon += fmt.Sprintf("%q:null,", "deprecated_at")
-	owner_jSon, _ := json.Marshal(module.Owner)
-	jSon += fmt.Sprintf("%q:%s", "owner", string(owner_jSon))
-	//json += fmt.Sprintf("%q:%s", "owner", module.owner.asJson())
-	jSon += "}"
-	return jSon
 }

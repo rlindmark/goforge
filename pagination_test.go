@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"testing"
@@ -71,7 +72,8 @@ func TestCreatePagination(t *testing.T) {
 		{
 			"limit=20&offset=0&name=puppetlabs-stdlib-9.0.1",
 			1,
-			`{"limit":20,"offset":0,"first":"/v3/releases?offset=0&limit=20","previous":null,"current":"/v3/releases?limit=20&name=puppetlabs-stdlib-9.0.1&offset=0","next":null,"total":1}`,
+			//`{"limit":20,"offset":0,"first":"/v3/releases?offset=0&limit=20","previous":null,"current":"/v3/releases?limit=20&name=puppetlabs-stdlib-9.0.1&offset=0","next":null,"total":1}`,
+			`{"limit":20,"offset":0,"first":"/v3/releases?offset=0\u0026limit=20","previous":null,"current":"/v3/releases?limit=20\u0026name=puppetlabs-stdlib-9.0.1\u0026offset=0","next":null,"total":1}`,
 			nil,
 		},
 	}
@@ -90,9 +92,10 @@ func TestCreatePagination(t *testing.T) {
 				fmt.Printf("fault: got %v want:%v", err, test.err)
 			}
 		} else {
-			result := pagination.asJSON()
-			if result != test.expect {
-				fmt.Printf("TestCreatePagination: Got %v, expected %v\n", result, test.expect)
+			result, _ := json.Marshal(pagination)
+			//result := pagination.asJSON()
+			if string(result) != test.expect {
+				t.Errorf("TestCreatePagination: Got %v, expected %v\n", string(result), test.expect)
 			}
 		}
 	}
@@ -120,7 +123,7 @@ func TestNewPagination(t *testing.T) {
 
 		result := pagination.asJSON()
 		if result != test.expect {
-			fmt.Printf("TestNewPagination: Got %s, expected %s\n", result, test.expect)
+			t.Errorf("got %s, expected %s\n", result, test.expect)
 		}
 	}
 }

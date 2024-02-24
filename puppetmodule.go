@@ -199,38 +199,7 @@ func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 	return &puppetmodule, nil
 }
 
-// func (m PuppetModule) MarshalJSON() ([]byte, error) {
-// 	a, err := json.Marshal(m.asJson())
-// 	return a, err
-// }
-
 func (m *PuppetModule) asJSON() string {
-	// ret, _ := json.Marshal(m)
-	// return string(ret)
-	json := "{"
-	json += fmt.Sprintf("%q:%q,", "uri", m.Uri)
-	json += fmt.Sprintf("%q:%q,", "slug", m.Slug)
-	json += fmt.Sprintf("%q:%s,", "module", m.Module.asJSON())
-	json += fmt.Sprintf("%q:%q,", "version", m.Version)
-	json += fmt.Sprintf("%q:%s,", "metadata", m.Metadata)
-	json += fmt.Sprintf("%q:%q,", "tags", m.Tags)
-	json += fmt.Sprintf("%q:%v,", "supported", m.Supported)
-	json += fmt.Sprintf("%q:%s,", "pdk", m.Pdk)
-	json += fmt.Sprintf("%q:%d,", "validation_score", m.Validation_Score)
-
-	json += fmt.Sprintf("%q:%q,", "file_uri", m.File_uri)
-	json += fmt.Sprintf("%q:%d,", "file_size", m.File_size)
-	json += fmt.Sprintf("%q:%q,", "file_md5", m.File_md5)
-	json += fmt.Sprintf("%q:%q,", "file_sha256", m.File_sha256)
-	json += fmt.Sprintf("%q:%d,", "downloads", m.Downloads)
-	json += fmt.Sprintf("%q:%q,", "readme", m.Readme)
-	json += fmt.Sprintf("%q:%q,", "changelog", m.Changelog)
-	json += fmt.Sprintf("%q:%q,", "license", m.License)
-	json += fmt.Sprintf("%q:%q,", "reference", m.Reference)
-	json += fmt.Sprintf("%q:%q,", "docs", m.Docs)
-	json += fmt.Sprintf("%q:%q,", "pe_compatibility", m.Pe_compatibility)
-	json += fmt.Sprintf("%q:%q,", "tasks", m.Tasks)
-	json += fmt.Sprintf("%q:%q", "plans", m.Plans)
-	json += "}"
-	return json
+	ret, _ := json.Marshal(m)
+	return string(ret)
 }

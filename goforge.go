@@ -237,8 +237,6 @@ func listModuleReleases(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("Unable to marshal. error:%v", err)
 	}
-	//jSON := []byte(response.asJSON())
-
 	//fmt.Printf("listModuleReleases:json:\n%s\n", string(jSON))
 	w.Write(jSON)
 }
@@ -276,7 +274,6 @@ func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jSON, _ := json.Marshal(module)
-	//jSON := module.asJson()
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	//fmt.Printf("FetchModuleRelease:json:%v", string(jSON))
 	fmt.Fprint(w, jSON)
