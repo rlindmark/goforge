@@ -19,6 +19,8 @@ Sample list of things to do.
 
 * Try to use json.Marshal() istead of toJson()
 
+* Remove all asJSON() functions when done
+
 * Investigate if get_v3_releases_module_result() is the same as
   "Fetch Module" from the API specification.
 
