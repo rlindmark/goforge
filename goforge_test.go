@@ -138,3 +138,61 @@ func TestFetchModuleRelease(t *testing.T) {
 		}
 	})
 }
+
+func TestForge_ip(t *testing.T) {
+
+	// test default ip
+	expect := DefaultForgeIp
+	got := Forge_ip()
+
+	if expect != got {
+		t.Errorf("expected %v, got %v", expect, got)
+	}
+
+	// test that env overrides default ip
+	expect = "127.0.0.2"
+	t.Setenv("FORGE_IP", expect)
+
+	got = Forge_ip()
+	if expect != got {
+		t.Errorf("expected %v, got %v", expect, got)
+	}
+}
+
+func TestForge_port(t *testing.T) {
+
+	// test default port
+	expect := DefaultForgePort
+	got := Forge_port()
+
+	if expect != got {
+		t.Errorf("expected %v, got %v", expect, got)
+	}
+	// test that env overrides default ip
+	expect = "8081"
+	t.Setenv("FORGE_PORT", expect)
+
+	got = Forge_port()
+	if expect != got {
+		t.Errorf("expected %v, got %v", expect, got)
+	}
+}
+
+func TestForge_cache(t *testing.T) {
+
+	// test default cache
+	expect := DefaultCacheRoot
+	got := Forge_cache()
+
+	if expect != got {
+		t.Errorf("expected %v, got %v", expect, got)
+	}
+	// test that env overrides default cache
+	expect = "CACHE"
+	t.Setenv("FORGE_CACHE", expect)
+
+	got = Forge_cache()
+	if expect != got {
+		t.Errorf("expected %v, got %v", expect, got)
+	}
+}

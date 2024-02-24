@@ -24,8 +24,6 @@ Sample list of things to do.
 * Investigate if get_v3_releases_module_result() is the same as
   "Fetch Module" from the API specification.
 
-* Write tests for Forge_ip(), Forge_port(), Forge_cache()
-
 ## Documentation
 
 * Update README.md with Q and A
