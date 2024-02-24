@@ -57,7 +57,7 @@ func TestNewOwner(t *testing.T) {
 	}
 }
 
-func TestOwnerAsJson(t *testing.T) {
+func TestOwnerAsJSON(t *testing.T) {
 
 	var testCases = []struct {
 		uri         string
@@ -69,6 +69,9 @@ func TestOwnerAsJson(t *testing.T) {
 		{"Puppetlabs", "Slug", "Username", "Gravatar",
 			`{"uri":"Puppetlabs","slug":"Slug","username":"Username","gravatar_id":"Gravatar"}`,
 		},
+		{"module", "slug", "username", "gravatar",
+			`{"uri":"module","slug":"slug","username":"username","gravatar_id":"gravatar"}`,
+		},
 	}
 
 	for _, test := range testCases {
@@ -77,7 +80,7 @@ func TestOwnerAsJson(t *testing.T) {
 
 		result, _ := json.Marshal(owner)
 		if string(result) != test.expect {
-			fmt.Printf("TestOwnerAsJson:Got %v, expected %v", result, test.expect)
+			t.Errorf("got %v, expected %v", string(result), test.expect)
 		}
 	}
 }
