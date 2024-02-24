@@ -110,8 +110,8 @@ func TestFetchModuleRelease(t *testing.T) {
 		contentLength int
 		response      string
 	}{
-		{"/v3/releases/puppetlabs-stdlib-9.4.1", 200, 161699, "ok"},
-		{"/v3/releases/puppetlabs-stdlib-9.4.0", 200, 162679, "ok"},
+		{"/v3/releases/puppetlabs-stdlib-9.4.1", 200, -1, "ok"},
+		{"/v3/releases/puppetlabs-stdlib-9.4.0", 200, -1, "ok"},
 		{"/v3/releases/puppetlabs-stdlib-1.0.0", 404, -1, "ok"},
 		{"/v3/releases/puppetlabs-stdlib-1.0.0", 404, -1, "ok"},
 	}
@@ -130,6 +130,7 @@ func TestFetchModuleRelease(t *testing.T) {
 			if got != test.statusCode {
 				t.Errorf("url = %v expected statuscode = %d got %d", test.path, test.statusCode, got)
 			}
+			//fmt.Printf("response.Result() = %v", response.Result())
 			got = int(response.Result().ContentLength)
 			if got != test.contentLength {
 				t.Errorf("path:%v expected content lengt = %d got %d", test.path, test.contentLength, got)

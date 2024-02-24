@@ -236,9 +236,10 @@ func listModuleReleases(w http.ResponseWriter, r *http.Request) {
 	jSON, err := json.Marshal(response)
 	if err != nil {
 		fmt.Printf("Unable to marshal. error:%v", err)
+		return
 	}
 	//fmt.Printf("listModuleReleases:json:\n%s\n", string(jSON))
-	w.Write(jSON)
+	fmt.Fprint(w, string(jSON))
 }
 
 func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
@@ -276,7 +277,7 @@ func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
 	jSON, _ := json.Marshal(module)
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	//fmt.Printf("FetchModuleRelease:json:%v", string(jSON))
-	fmt.Fprint(w, jSON)
+	fmt.Fprint(w, string(jSON))
 }
 
 func Forge_ip() string {
