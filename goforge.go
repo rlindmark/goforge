@@ -14,21 +14,12 @@ import (
 	"strings"
 )
 
-const DefaultPort string = "8080"
-const DefaultIP string = "127.0.0.1"
+const DefaultForgeIp = "127.0.0.1"
+const DefaultForgePort = "8080"
+const DefaultCacheRoot = "cache"
 
 const DefaultPageLimit = 20
 const DefaultPageOffset = 0
-
-// func ForgePort() string {
-
-// 	return DefaultPort
-// }
-
-// func ForgeIP() string {
-
-// 	return DefaultIP
-// }
 
 type ForgeError struct {
 	Error_msg string   `json:"error"`
@@ -90,9 +81,6 @@ func DownloadModuleRelease(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	// set Contant-Type:
-	// w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
 	fileInfo, err := file.Stat()
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -106,29 +94,6 @@ type V3ReleaseResponse struct {
 	Pagination *Pagination    `json:"pagination"`
 	Results    []PuppetModule `json:"results"`
 }
-
-// func (p *V3ReleaseResponse) asJSON() string {
-// 	json := "{"
-// 	pagination := p.Pagination
-// 	json += `"pagination":`
-// 	json += pagination.asJSON()
-// 	json += ","
-// 	json += `"results":[`
-// 	results := p.Results
-// 	size := len(results)
-// 	for index, puppet_module := range results {
-// 		puppet_module_json := puppet_module.asJSON()
-// 		json += puppet_module_json
-// 		// add a comma (,) between all items except last one
-// 		if index < size-1 {
-// 			json += ","
-// 		}
-// 	}
-// 	json += "]"
-// 	json += "}"
-
-// 	return json
-// }
 
 // FIXME: fix comment for this function
 func SplitModuleName(puppetmodule string) (string, string, string, error) {
@@ -162,6 +127,7 @@ func to_owner_and_modulename(puppet_module_without_version string) (string, stri
 }
 
 func get_all_versions_for_module(module_name string) []string {
+
 	base := Forge_cache()
 
 	if len(module_name) == 0 {
@@ -175,6 +141,7 @@ func get_all_versions_for_module(module_name string) []string {
 	os.Chdir(path)
 	files, _ := filepath.Glob(module_name + "*.tar.gz")
 	os.Chdir(old)
+
 	//fmt.Printf("files: %v\n", files)
 	return files
 }
@@ -314,10 +281,6 @@ func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
 	//fmt.Printf("FetchModuleRelease:json:%v", string(jSON))
 	fmt.Fprint(w, jSON)
 }
-
-const DefaultForgeIp = "127.0.0.1"
-const DefaultForgePort = "8080"
-const DefaultCacheRoot = "cache"
 
 func Forge_ip() string {
 	forge_ip := os.Getenv("FORGE_IP")
