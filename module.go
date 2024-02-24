@@ -12,7 +12,7 @@ type Module struct {
 	Slug          string  `json:"slug"`
 	Name          string  `json:"name"`
 	Deprecated_at *string `json:"deprecated_at"`
-	owner         *Owner
+	Owner         *Owner
 }
 
 func isValidModuleSlug(slug string) (bool, error) {
@@ -61,7 +61,7 @@ func (module *Module) asJSON() string {
 	jSon += fmt.Sprintf("%q:%q,", "slug", module.Slug)
 	jSon += fmt.Sprintf("%q:%q,", "name", module.Name)
 	jSon += fmt.Sprintf("%q:null,", "deprecated_at")
-	owner_jSon, _ := json.Marshal(module.owner)
+	owner_jSon, _ := json.Marshal(module.Owner)
 	jSon += fmt.Sprintf("%q:%s", "owner", string(owner_jSon))
 	//json += fmt.Sprintf("%q:%s", "owner", module.owner.asJson())
 	jSon += "}"
