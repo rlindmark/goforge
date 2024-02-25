@@ -26,6 +26,11 @@ type ForgeError struct {
 	Messages  []string `json:"messages"`
 }
 
+type V3ReleaseResponse struct {
+	Pagination *Pagination    `json:"pagination"`
+	Results    []PuppetModule `json:"results"`
+}
+
 func validModuleReleaseFilename(moduleReleaseFilename string) (bool, error) {
 
 	result, _ := regexp.MatchString("^[a-zA-Z0-9]+[-/][a-z][a-z0-9_]*[-/][0-9]+.[0-9]+.[0-9]+(?:[-+].+)?.tar.gz$", moduleReleaseFilename)
@@ -47,6 +52,15 @@ func validModuleReleaseSlug(release_slug string) (bool, error) {
 	return false, fmt.Errorf(`{"message":"400 Bad Request","errors":["'%s' is not a valid release slug"]}`, release_slug)
 }
 
+/*
+DownloadModuleRelease downloads filename
+
+GET /v3/files/{filename}
+
+# PATH PARAMETERS
+
+	filename (required) Module release filename to be downloaded (e.g. "puppetlabs-apache-2.0.0.tar.gz")
+*/
 func DownloadModuleRelease(w http.ResponseWriter, r *http.Request) {
 
 	// moduleReleaseFilename are on the form puppetlabs-apache-4.0.0
@@ -57,8 +71,7 @@ func DownloadModuleRelease(w http.ResponseWriter, r *http.Request) {
 	// test that filename is legal
 	res, err := validModuleReleaseFilename(moduleReleaseFilename)
 	if !res {
-		// 400
-		//result := fmt.Sprintf("{\"message\": \"400 Bad Request\", \"errors\": [\"'%s' is not a valid release slug\"]}", moduleReleaseFilename)
+		//result := fmt.Sprintf(`{"message":"400 Bad Request","errors":["'%s' is not a valid release slug"]}`, moduleReleaseFilename)
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)
@@ -90,14 +103,13 @@ func DownloadModuleRelease(w http.ResponseWriter, r *http.Request) {
 	http.ServeContent(w, r, fileInfo.Name(), fileInfo.ModTime(), file)
 }
 
-type V3ReleaseResponse struct {
-	Pagination *Pagination    `json:"pagination"`
-	Results    []PuppetModule `json:"results"`
-}
-
-// FIXME: fix comment for this function
+// SplitModuleName takes a valid module name and returns owner, module, version and error
+// a module name might end in tar.gz which are disregarded during split.
+// Example:
+//
+//	given owner-module-1.0.0 or owner-module-1.0.0.tar.gz returns
+//	(owner, module, 1.0.0, nil)
 func SplitModuleName(puppetmodule string) (string, string, string, error) {
-	// returns owner, module, version, hash given puppetlabs-stdlib-1.0.0 or puppetlabs-stdlib-1.0.0.tar.gz
 
 	// puppetmodule ending with ".tar.gz"
 	module_name := strings.TrimSuffix(puppetmodule, ".tar.gz")
@@ -150,7 +162,7 @@ func get_results(all_modules []string, offset int, limit int) ([]PuppetModule, e
 
 	// assert first >= 0
 	// assert last >= first
-	// len(all_mopdules) >= last
+	// len(all_modules) >= last
 
 	var result []PuppetModule
 	total := len(all_modules)
@@ -183,7 +195,24 @@ func get_v3_releases_module_result(module_name string) (*PuppetModule, error) {
 	return puppet_module, nil
 }
 
-func listModuleReleases(w http.ResponseWriter, r *http.Request) {
+/*
+ListModuleReleases returns a list of module releases meeting the specified search criteria and filters. Results are paginated. All of the parameters are optional.
+
+GET /v3/releases
+
+QUERY PARAMETERS
+
+	limit  integer [1..100} Default: 20
+
+	offset integer >= 0 Default: 0
+
+	sort_by Enum["downloads" "release_date" "module"] Desired order in which to return results
+
+	module
+	owner  NOT IMPLEMENTED
+	...    NOT IMPLEMENTED
+*/
+func ListModuleReleases(w http.ResponseWriter, r *http.Request) {
 
 	url_query := r.URL.Query()
 
@@ -238,27 +267,34 @@ func listModuleReleases(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Unable to marshal. error:%v", err)
 		return
 	}
-	//fmt.Printf("listModuleReleases:json:\n%s\n", string(jSON))
+	//fmt.Printf("ListModuleReleases:json:\n%s\n", string(jSON))
 	fmt.Fprint(w, string(jSON))
 }
 
+/*
+FetchModuleRelease returns data for a single module Release resource identified by the module release's slug value.
+
+GET /v3/releases/{release_slug}
+
+# PATH PARAMETERS
+
+	release_slug (required) example: puppetlabs-apache-4.0.0
+
+QUERY PARAMETERS
+
+	with_html        NOT IMPLEMENTED
+	include_fields   NOT IMPLEMENTED
+	exclude_fields   NOT IMPLEMENTED
+*/
 func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
 
-	// PATH PARAMETERS
-	//   release_slug (required) example: puppetlabs-apache-4.0.0
-
-	// QUERY PARAMETERS
-	//   with_html        NOT IMPLEMENTED
-	//   include_fields   NOT IMPLEMENTED
-	//   exclude_fields   NOT IMPLEMENTED
-
-	// moduleReleaseSlug should be on the form puppetlabs-apache-4.0.0
+	// FIXME: ensure the first 13 bytes in r.URL.Path
 	moduleReleaseSlug := r.URL.Path[13:]
 
 	res, err := validModuleReleaseSlug(moduleReleaseSlug)
 	if !res {
 		// 400
-		//result := fmt.Sprintf("{\"message\": \"400 Bad Request\", \"errors\": [\"'%s' is not a valid release slug\"]}", moduleReleaseSlug)
+		//result := fmt.Sprintf(`{"message":"400 Bad Request","errors":["'%s' is not a valid release slug"]}`, moduleReleaseSlug)
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)
@@ -268,7 +304,7 @@ func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
 	module, err := NewPuppetModule(moduleReleaseSlug)
 	if module == nil {
 		// 404
-		//result := "{\"message\": \"404 Not Found\", \"errors\": [\"'The requested resource could not be found\"]}"
+		//result := `{"message":"404 Not Found","errors":["'The requested resource could not be found"]}`
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprint(w, err)
@@ -322,7 +358,7 @@ func main() {
 	})
 
 	http.HandleFunc("/v3/releases", func(w http.ResponseWriter, r *http.Request) {
-		listModuleReleases(w, r)
+		ListModuleReleases(w, r)
 	})
 
 	http.HandleFunc("/v3/files/", func(w http.ResponseWriter, r *http.Request) {
