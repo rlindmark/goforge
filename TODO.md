@@ -20,6 +20,11 @@ Sample list of things to do.
 * Investigate if get_v3_releases_module_result() is the same as
   "Fetch Module" from the API specification.
 
+* ListModuleReleases() see if code for default values can be written in a
+  better way.
+
+* Maybe rearrange project into main, api, cache for better code separation.
+
 ## Documentation
 
 * Update README.md with Q and A
