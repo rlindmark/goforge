@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"html"
 	"log"
@@ -348,6 +349,16 @@ func logRequest(handler http.Handler) http.Handler {
 }
 
 func main() {
+
+	usage := flag.Bool("help", false, `Use environment variables to set parameters.
+	FORGE_IP - ip-adress the program listens to (default 127.0.0.1)
+	FORGE_PORT - port number the program listens to (default 8080)
+	FORGE_CACHE - path to the forge cache (default 'cache')`)
+	flag.Parse()
+	if *usage {
+		flag.Usage()
+		os.Exit(0)
+	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
