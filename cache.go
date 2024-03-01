@@ -4,10 +4,19 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
 const DefaultCache string = "cache"
+
+type ForgeCache struct {
+	cache_root string
+}
+
+func NewForgeCache(root_path string) ForgeCache {
+	return ForgeCache{cache_root: root_path}
+}
 
 // FIXME: argument need to be a file
 func FileInCache(filename string) bool {
@@ -18,6 +27,58 @@ func FileInCache(filename string) bool {
 	}
 
 	return fileInfo.Mode().IsRegular()
+}
+
+func Module_hash(module string) string {
+	if len(module) > 0 {
+		return string(module[0])
+	}
+	return ""
+}
+
+// GetModule returns the filepath to the module if found in the cache
+func (c *ForgeCache) GetModuleFilePath(release_slug string) (string, error) {
+
+	ok, err := validModuleReleaseSlug(release_slug)
+	if !ok {
+		return "", err
+	}
+
+	owner, module, version, err := SplitModuleName(release_slug)
+	if err != nil {
+		return "", err
+	}
+
+	hash_path := Module_hash(release_slug)
+	path := filepath.Join(c.cache_root, hash_path, owner, module, version)
+
+	if FileInCache(path + ".tar.gz") {
+		return path + ".tar.gz", nil
+	}
+	return "", fmt.Errorf("not found in cache")
+}
+
+// GetModuleVersions returns a list of filepaths for the module slug in the cache
+func (c ForgeCache) GetModuleVersions(module_slug string) []string {
+
+	//base := Forge_cache()
+
+	ok, _ := isValidModuleSlug(module_slug)
+	if !ok {
+		return nil
+	}
+
+	hashpath := Module_hash(module_slug)
+	owner, _ := to_owner_and_modulename(module_slug)
+	path := filepath.Join(c.cache_root, hashpath, owner)
+
+	old, _ := os.Getwd()
+	os.Chdir(path)
+	files, _ := filepath.Glob(module_slug + "*.tar.gz")
+	os.Chdir(old)
+
+	//fmt.Printf("files: %v\n", files)
+	return files
 }
 
 func ModulePathInCache(module_name string) (string, error) {

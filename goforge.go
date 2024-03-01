@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
@@ -124,13 +123,6 @@ func SplitModuleName(puppetmodule string) (string, string, string, error) {
 	return "", "", "", err
 }
 
-func Module_hash(module string) string {
-	if len(module) > 0 {
-		return string(module[0])
-	}
-	return ""
-}
-
 func to_owner_and_modulename(puppet_module_without_version string) (string, string) {
 	z := strings.SplitN(puppet_module_without_version, "-", 2)
 	if len(z) < 2 {
@@ -139,25 +131,25 @@ func to_owner_and_modulename(puppet_module_without_version string) (string, stri
 	return z[0], z[1]
 }
 
-func get_all_versions_for_module(module_name string) []string {
+// func get_all_versions_for_module(module_name string) []string {
 
-	base := Forge_cache()
+// 	base := Forge_cache()
 
-	if len(module_name) == 0 {
-		return nil
-	}
-	dir_hash := Module_hash(module_name)
-	owner, _ := to_owner_and_modulename(module_name)
-	path := base + "/" + dir_hash + "/" + owner
+// 	if len(module_name) == 0 {
+// 		return nil
+// 	}
+// 	dir_hash := Module_hash(module_name)
+// 	owner, _ := to_owner_and_modulename(module_name)
+// 	path := base + "/" + dir_hash + "/" + owner
 
-	old, _ := os.Getwd()
-	os.Chdir(path)
-	files, _ := filepath.Glob(module_name + "*.tar.gz")
-	os.Chdir(old)
+// 	old, _ := os.Getwd()
+// 	os.Chdir(path)
+// 	files, _ := filepath.Glob(module_name + "*.tar.gz")
+// 	os.Chdir(old)
 
-	//fmt.Printf("files: %v\n", files)
-	return files
-}
+// 	//fmt.Printf("files: %v\n", files)
+// 	return files
+// }
 
 func get_results(all_modules []string, offset int, limit int) ([]PuppetModule, error) {
 
@@ -229,6 +221,7 @@ func ListModuleReleases(w http.ResponseWriter, r *http.Request) {
 		offset, err = strconv.Atoi(offset_string)
 		if err != nil {
 			// if not an integer, report it and let offset = defaultPageOffset
+			// FIXME: this should return an error instead
 			fmt.Printf("expected integer, got %v", offset_string)
 		}
 	} else {
@@ -243,6 +236,7 @@ func ListModuleReleases(w http.ResponseWriter, r *http.Request) {
 		limit, err = strconv.Atoi(limit_string)
 		if err != nil {
 			// if not an integer, report it and let offset = defaultPageOffset
+			// FIXME: this should return an error instead
 			fmt.Printf("expected integer, got %v", offset_string)
 		}
 	} else {
@@ -252,16 +246,18 @@ func ListModuleReleases(w http.ResponseWriter, r *http.Request) {
 
 	//fmt.Printf("module_name: %v\n", module_name)
 
-	all_matching_modules := get_all_versions_for_module(module_name)
+	// all_matching_modules := get_all_versions_for_module(module_name)
+	// fmt.Printf(forge_cache.cache_root)
+	all_matching_modules := forge_cache.GetModuleVersions(module_name)
 
 	sort.Sort(sort.Reverse(sort.StringSlice(all_matching_modules)))
 	total := len(all_matching_modules)
 
 	pagination, _ := CreatePagination(url_query, total)
 
-	results, _ := get_results(all_matching_modules, offset, limit)
+	modules_list, _ := get_results(all_matching_modules, offset, limit)
 
-	response := V3ReleaseResponse{Pagination: pagination, Results: results}
+	response := V3ReleaseResponse{Pagination: pagination, Results: modules_list}
 
 	jSON, err := json.Marshal(response)
 	if err != nil {
@@ -348,20 +344,29 @@ func logRequest(handler http.Handler) http.Handler {
 	})
 }
 
+var help = flag.Bool("help", false, `Usage: use environment variables to configure usage.
+	FORGE_IP - ip-adress to bind to (default 127.0.0.1)
+	FORGE_PORT - listen port (default 8080)
+	FORGE_CACHE - path to the forge cache (default 'cache')`)
+
+func HomePage(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+}
+
+var forge_cache ForgeCache
+
 func main() {
 
-	usage := flag.Bool("help", false, `Use environment variables to set parameters.
-	FORGE_IP - ip-adress the program listens to (default 127.0.0.1)
-	FORGE_PORT - port number the program listens to (default 8080)
-	FORGE_CACHE - path to the forge cache (default 'cache')`)
 	flag.Parse()
-	if *usage {
+	if *help {
 		flag.Usage()
 		os.Exit(0)
 	}
 
+	forge_cache = NewForgeCache(Forge_cache())
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+		HomePage(w, r)
 	})
 
 	http.HandleFunc("/v3/releases/", func(w http.ResponseWriter, r *http.Request) {
