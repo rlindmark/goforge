@@ -4,8 +4,7 @@ Simple clone of the puppetlabs puppetforge system.
 
 Project selected to get a feeling for golang.
 
-Target usage of this code is for use as a local puppetforge where all modules
-are locally cached.
+Target usage is as a local puppetforge where all modules are locally cached.
 
 ## Usage
 
@@ -13,7 +12,7 @@ are locally cached.
 
 All puppet modules are stored in a local cache-directory structure as follows
 
-    ${CACHE_ROOT}/{module_hash}/module_owner/{module_owner}-{modulename}-{version}.tar.gz
+    ${FORGE_CACHE}/{module_hash}/module_owner/{module_owner}-{modulename}-{version}.tar.gz
 
 The `module_hash` is the first character of the module_owner string.
 
@@ -49,4 +48,4 @@ Code does not implement any POST Puppet Forge API:s as the cache is managed outs
 Currently implements some parts of the following api endpoints.
 
 * </v3/files/{filename}>
-* </v3/releases/>
+* </v3/modules/>
