@@ -25,8 +25,6 @@ Sample list of things to do.
 
 * Maybe rearrange project into main, api, cache for better code separation.
 
-* Add --help / --usage option
-
 ## Documentation
 
 * Update README.md with Q and A
