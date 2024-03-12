@@ -63,92 +63,6 @@ func DownloadModuleRelease(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-FetchModuleRelease returns data for a single module Release resource identified by the module release's slug value.
-
-GET /v3/releases/{release_slug}
-
-# PATH PARAMETERS
-
-	release_slug (required) example: puppetlabs-apache-4.0.0
-
-QUERY PARAMETERS
-
-	with_html        NOT IMPLEMENTED
-	include_fields   NOT IMPLEMENTED
-	exclude_fields   NOT IMPLEMENTED
-*/
-func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
-
-	// FIXME: ensure the first 13 bytes in r.URL.Path
-	moduleReleaseSlug := r.URL.Path[13:]
-
-	res, err := ValidModuleReleaseSlug(moduleReleaseSlug)
-	if !res {
-		// 400
-		//result := fmt.Sprintf(`{"message":"400 Bad Request","errors":["'%s' is not a valid release slug"]}`, moduleReleaseSlug)
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
-		return
-	}
-
-	module, err := NewPuppetModule(moduleReleaseSlug)
-	if module == nil {
-		// 404
-		//result := `{"message":"404 Not Found","errors":["'The requested resource could not be found"]}`
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, err)
-		return
-	}
-	jSON, _ := json.Marshal(module)
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	//fmt.Printf("FetchModuleRelease:json:%v", string(jSON))
-	fmt.Fprint(w, string(jSON))
-}
-
-func HomePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
-}
-
-func get_results(all_modules []string, offset int, limit int) ([]PuppetModule, error) {
-
-	// assert first >= 0
-	// assert last >= first
-	// len(all_modules) >= last
-
-	var result []PuppetModule
-	total := len(all_modules)
-
-	if total == 0 {
-		return nil, nil
-	}
-	last := min(total, offset+limit)
-
-	for _, module_name_version := range all_modules[offset:last] {
-		puppet_module, _ := get_v3_releases_module_result(module_name_version)
-		result = append(result, *puppet_module)
-	}
-	return result, nil
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func get_v3_releases_module_result(module_name string) (*PuppetModule, error) {
-
-	modulename := strings.TrimSuffix(module_name, ".tar.gz")
-
-	puppet_module, _ := NewPuppetModule(modulename)
-
-	return puppet_module, nil
-}
-
-/*
 ListModuleReleases returns a list of module releases meeting the specified search criteria and filters. Results are paginated. All of the parameters are optional.
 
 GET /v3/releases
@@ -225,4 +139,190 @@ func ListModuleReleases(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprint(w, string(jSON))
+}
+
+// CreateModuleRelease publish a new module or new release of an existing module
+func CreateModuleRelease(w http.ResponseWriter, r *http.Request) {
+
+}
+
+/*
+FetchModuleRelease returns data for a single module Release resource identified by the module release's slug value.
+
+GET /v3/releases/{release_slug}
+
+# PATH PARAMETERS
+
+	release_slug (required) example: puppetlabs-apache-4.0.0
+
+QUERY PARAMETERS
+
+	with_html        NOT IMPLEMENTED
+	include_fields   NOT IMPLEMENTED
+	exclude_fields   NOT IMPLEMENTED
+*/
+func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
+
+	// FIXME: ensure the first 13 bytes in r.URL.Path
+	moduleReleaseSlug := r.URL.Path[13:]
+
+	res, err := ValidModuleReleaseSlug(moduleReleaseSlug)
+	if !res {
+		// 400
+		//result := fmt.Sprintf(`{"message":"400 Bad Request","errors":["'%s' is not a valid release slug"]}`, moduleReleaseSlug)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, err)
+		return
+	}
+
+	module, err := NewPuppetModule(moduleReleaseSlug)
+	if module == nil {
+		// 404
+		//result := `{"message":"404 Not Found","errors":["'The requested resource could not be found"]}`
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, err)
+		return
+	}
+	jSON, _ := json.Marshal(module)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	//fmt.Printf("FetchModuleRelease:json:%v", string(jSON))
+	fmt.Fprint(w, string(jSON))
+}
+
+func DeleteModuleRelease(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func ListModuleReleasePlans(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func FetchModuleReleasePlan(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func ListModules(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func FetchModule(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func DeprecateModule(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func DeleteModule(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func CreateSearchFilter(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func GetUsersSearchFilters(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func DeleteSearchFilterByID(w http.ResponseWriter, r *http.Request) {
+
+}
+
+/*
+ListUsers provides information about Puppet Forge user accounts. By default,
+results are returned in alphabetical order by username and paginated with 20
+users per page. It's also possible to sort by number of published releases,
+total download counts for all the user's modules, or by the date of the
+user's latest release. All parameters are optional.
+*/
+func ListUsers(w http.ResponseWriter, r *http.Request) {
+
+}
+
+/*
+FetchUser returns data for a single User resource identified by the user's slug value.
+
+GET /v3/users/{user_slug}
+PATH PARAMETERS
+
+user_slug required string  ^[a-zA-Z0-9]+$ example: puppetlabs
+
+Unique textual identifier (slug) of the User resource to retrieve
+*/
+func FetchUser(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != "GET" {
+		return
+	}
+
+	userSlug := r.URL.Path[10:]
+
+	res, _ := IsValidUserSlug(userSlug)
+	if !res {
+		// 400
+		result := fmt.Sprintf(`{"message":"400 Bad Request","errors":["'%s' is not a valid user slug"]}`, userSlug)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, result)
+		return
+	}
+
+	user, err := NewUser("/v3/users/"+userSlug, userSlug, "12345", userSlug, userSlug, 1, 1, "1970-01-01 01:01", "1970-01-01 01:01")
+	if user == nil {
+		// 404
+		// result := `{"message":"404 Not Found","errors":["'The requested resource could not be found"]}`
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, err)
+		return
+	}
+
+	jSON, _ := json.Marshal(user)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	fmt.Fprint(w, string(jSON))
+}
+
+func HomePage(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+}
+
+func get_results(all_modules []string, offset int, limit int) ([]PuppetModule, error) {
+
+	// assert first >= 0
+	// assert last >= first
+	// len(all_modules) >= last
+
+	var result []PuppetModule
+	total := len(all_modules)
+
+	if total == 0 {
+		return nil, nil
+	}
+	last := min(total, offset+limit)
+
+	for _, module_name_version := range all_modules[offset:last] {
+		puppet_module, _ := get_v3_releases_module_result(module_name_version)
+		result = append(result, *puppet_module)
+	}
+	return result, nil
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func get_v3_releases_module_result(module_name string) (*PuppetModule, error) {
+
+	modulename := strings.TrimSuffix(module_name, ".tar.gz")
+
+	puppet_module, _ := NewPuppetModule(modulename)
+
+	return puppet_module, nil
 }

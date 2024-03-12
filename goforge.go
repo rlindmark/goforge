@@ -140,6 +140,14 @@ func main() {
 		DownloadModuleRelease(w, r)
 	})
 
+	http.HandleFunc("/v3/users", func(w http.ResponseWriter, r *http.Request) {
+		ListUsers(w, r)
+	})
+
+	http.HandleFunc("/v3/users/", func(w http.ResponseWriter, r *http.Request) {
+		FetchUser(w, r)
+	})
+
 	ip_and_port := fmt.Sprintf("%s:%s", Forge_ip(), Forge_port())
 
 	log.Fatal(http.ListenAndServe(ip_and_port, logRequest(http.DefaultServeMux)))
