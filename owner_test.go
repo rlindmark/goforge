@@ -22,7 +22,7 @@ func TestIsValidOwnerSlug(t *testing.T) {
 
 	for _, test := range testCases {
 
-		result, _ := isValidOwnerSlug(test.slug)
+		result, _ := IsValidOwnerSlug(test.slug)
 
 		if result != test.expect {
 			fmt.Printf("For %v: got %v, expected %v", test.slug, result, test.expect)

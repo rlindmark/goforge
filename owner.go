@@ -12,12 +12,12 @@ type Owner struct {
 	Gravatar_id string `json:"gravatar_id"`
 }
 
-func isValidOwnerSlug(slug string) (bool, error) {
+func IsValidOwnerSlug(slug string) (bool, error) {
 	return regexp.MatchString("^[a-zA-Z0-9]+$", slug)
 }
 
 func NewOwner(uri string, slug string, username string, gravatar_id string) (*Owner, error) {
-	ok, _ := isValidOwnerSlug(slug)
+	ok, _ := IsValidOwnerSlug(slug)
 	if !ok {
 		return nil, fmt.Errorf("cant create owner with invalid slug: %v", slug)
 	}

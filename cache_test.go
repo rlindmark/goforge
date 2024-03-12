@@ -12,7 +12,7 @@ func TestFileInCache(t *testing.T) {
 		{"", false}, // no empty argument
 		{"cache/p/puppetlabs/puppetlabs-stdlib-9.4.1.tar.gz", true},
 		{"cache/p/puppetlabs/puppetlabs-stdlib-9.4.0.tar.gz", true},
-		{"cache/p/puppetlabs/puppetlabs-stdlib-9.3.0.tar.gz", false},
+		{"cache/p/puppetlabs/puppetlabs-stdlib-9.3.1.tar.gz", false},
 		{"p", false},
 	}
 

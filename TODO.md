@@ -2,12 +2,7 @@
 
 Sample list of things to do.
 
-## Functions to implement
-
-* Download module release
-* Fetch module release
-* List modules
-* Fetch module
+* Stub out all methods
 
 * Try to use pdk to generate testing modules
   From the puppet documentation on ubuntu 22.04
@@ -24,6 +19,8 @@ Sample list of things to do.
   better way.
 
 * Maybe rearrange project into main, api, cache for better code separation.
+
+* Create /api and move the fetch code into that directory
 
 ## Documentation
 
