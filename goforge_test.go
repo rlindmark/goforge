@@ -103,6 +103,33 @@ func TestV3File(t *testing.T) {
 	})
 }
 
+func TestListUsers(t *testing.T) {
+	var testCases = []struct {
+		path          string
+		statusCode    int
+		contentLength int
+		response      string
+	}{
+		{"/v3/users", 200, 161699, "ok"},
+	}
+
+	t.Run("returns a forge user", func(t *testing.T) {
+
+		for _, test := range testCases {
+
+			request, _ := http.NewRequest(http.MethodGet, test.path, nil)
+			response := httptest.NewRecorder()
+
+			ListUsers(response, request)
+
+			//got := response.Body.String()
+			got := response.Result().StatusCode
+			if got != test.statusCode {
+				t.Errorf("expected statuscode = %d got %d", test.statusCode, got)
+			}
+		}
+	})
+}
 func TestFetchModuleRelease(t *testing.T) {
 	var testCases = []struct {
 		path          string

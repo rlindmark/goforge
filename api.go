@@ -240,6 +240,64 @@ user's latest release. All parameters are optional.
 */
 func ListUsers(w http.ResponseWriter, r *http.Request) {
 
+	type userResponse struct {
+		Pagination *Pagination `json:"pagination"`
+		Results    []User      `json:"results"`
+	}
+
+	url_query := r.URL.Query()
+
+	// parse all query parameters
+	// FIXME: there are a lot to manage
+
+	var err error
+
+	offset := DefaultPageOffset
+	offset_string := r.URL.Query().Get("offset")
+	if offset_string != "" {
+		offset, err = strconv.Atoi(offset_string)
+		if err != nil {
+			// if not an integer, report it and let offset = defaultPageOffset
+			// FIXME: this should return an error instead
+			fmt.Printf("expected integer, got %v", offset_string)
+		}
+	} else {
+		// if offset is not present in the query string, add it with default value
+		url_query.Add("offset", fmt.Sprint(offset))
+	}
+
+	limit := DefaultPageLimit
+	limit_string := r.URL.Query().Get("limit")
+	if limit_string != "" {
+		// FIXME: check for err
+		limit, err = strconv.Atoi(limit_string)
+		if err != nil {
+			// if not an integer, report it and let offset = defaultPageOffset
+			// FIXME: this should return an error instead
+			fmt.Printf("expected integer, got %v", offset_string)
+		}
+	} else {
+		// if limit is not present in the query string, add it with default value
+		url_query.Add("limit", fmt.Sprint(limit))
+	}
+
+	users := forge_cache.GetAllUsers()
+
+	sort.Sort(sort.Reverse(sort.StringSlice(users)))
+	total := len(users)
+
+	pagination, _ := CreatePagination(url_query, total)
+
+	user_list, _ := get_user_results(users, offset, limit)
+
+	response := userResponse{Pagination: pagination, Results: user_list}
+
+	jSON, err := json.Marshal(response)
+	if err != nil {
+		fmt.Printf("Unable to marshal. error:%v", err)
+		return
+	}
+	fmt.Fprint(w, string(jSON))
 }
 
 /*
@@ -290,6 +348,32 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
 }
 
+func get_user_results(users []string, offset int, limit int) ([]User, error) {
+
+	// assert first >= 0
+	// assert last >= first
+	// len(all_modules) >= last
+
+	var result []User
+	total := len(users)
+
+	if total == 0 {
+		return nil, nil
+	}
+	last := min(total, offset+limit)
+
+	create_at := "1970-01-01 01:01:01 0000"  // just make some up
+	updated_at := "1970-01-01 01:01:01 0000" // just make some up
+	gravatar_id := "1234"
+
+	for _, user_name := range users[offset:last] {
+		user, err := NewUser("/v3/user/"+user_name, user_name, gravatar_id, user_name, user_name, 0, 0, create_at, updated_at)
+		if err == nil {
+			result = append(result, *user)
+		}
+	}
+	return result, nil
+}
 func get_results(all_modules []string, offset int, limit int) ([]PuppetModule, error) {
 
 	// assert first >= 0

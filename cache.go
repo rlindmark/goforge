@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -79,6 +80,29 @@ func (c ForgeCache) GetModuleVersions(module_slug string) []string {
 
 	//fmt.Printf("files: %v\n", files)
 	return files
+}
+
+// GetAllUsers returns a list of all users found in the cache
+func (c ForgeCache) GetAllUsers() []string {
+
+	//base := Forge_cache()
+
+	files, err := filepath.Glob("cache/*/*")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	vsm := make([]string, len(files))
+	for i, v := range files {
+		vsm[i] = filepath.Base(v)
+	}
+	return vsm
+	// FIXME: only return directories and not files
+	// for _, file := range files {
+	// 	fmt.Println(file)
+	// }
+
+	// return files
 }
 
 func ModulePathInCache(module_name string) (string, error) {
