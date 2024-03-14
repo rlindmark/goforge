@@ -22,11 +22,6 @@ type ForgeError struct {
 	Messages  []string `json:"messages"`
 }
 
-type V3ReleaseResponse struct {
-	Pagination *Pagination    `json:"pagination"`
-	Results    []PuppetModule `json:"results"`
-}
-
 func validModuleReleaseFilename(moduleReleaseFilename string) (bool, error) {
 
 	result, _ := regexp.MatchString("^[a-zA-Z0-9]+[-/][a-z][a-z0-9_]*[-/][0-9]+.[0-9]+.[0-9]+(?:[-+].+)?.tar.gz$", moduleReleaseFilename)
@@ -129,11 +124,13 @@ func main() {
 	})
 
 	http.HandleFunc("/v3/releases/", func(w http.ResponseWriter, r *http.Request) {
-		FetchModuleRelease(w, r)
+		HandleModuleRelease(w, r)
+		//FetchModuleRelease(w, r)
 	})
 
 	http.HandleFunc("/v3/releases", func(w http.ResponseWriter, r *http.Request) {
-		ListModuleReleases(w, r)
+		HandleReleases(w, r)
+		// ListModuleReleases(w, r)
 	})
 
 	http.HandleFunc("/v3/files/", func(w http.ResponseWriter, r *http.Request) {

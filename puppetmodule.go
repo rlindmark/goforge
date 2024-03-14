@@ -131,15 +131,6 @@ func get_metadata(owner_module_version string) (string, error) {
 	return "", nil
 }
 
-// func read_metadata(filename string) string {
-// 	dat, err := os.ReadFile(filename)
-// 	if err != nil {
-// 		fmt.Printf("Cant open %s\n", filename)
-// 		return ""
-// 	}
-// 	return (string(dat))
-// }
-
 // module_name is the string "owner-module-version" with no version
 func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 

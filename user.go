@@ -31,10 +31,5 @@ func NewUser(
 		return nil, fmt.Errorf(`{"message":"400 Bad Request","errors":["'%s' is not a valid user slug"]}`, slug)
 	}
 
-	// FIXME: assert that uri begins with "/v3/users/"
-	// FIXME: gravatar_id should be sha256 char long.
-	// FIXME: Need to check that the user exist in cache
-	// FIXME: get release_count
-	// FIXME: get module_count
 	return &User{uri, slug, gravatar_id, username, display_name, release_count, module_count, created_at, updated_at}, nil
 }

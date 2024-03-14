@@ -16,21 +16,23 @@ DownloadModuleRelease downloads filename
 
 GET /v3/files/{filename}
 
-# PATH PARAMETERS
+PATH PARAMETERS
 
 	filename (required) Module release filename to be downloaded (e.g. "puppetlabs-apache-2.0.0.tar.gz")
 */
 func DownloadModuleRelease(w http.ResponseWriter, r *http.Request) {
 
-	// moduleReleaseFilename are on the form puppetlabs-apache-4.0.0
+	if r.Method != "GET" {
+		return
+	}
+
 	// Module release filename to be downloaded (e.g. "puppetlabs-apache-2.0.0.tar.gz")
 	moduleReleaseFilename := r.URL.Path[10:]
-	// FIXME: test that r.URL.Path[0-9] is "/v3/files/"
+	// FIXME: test that r.URL.Path[0-9] is "/v3/files/" Return a 5xx error in such case
 
 	// test that filename is legal
 	res, err := ValidModuleReleaseFilename(moduleReleaseFilename)
 	if !res {
-		//result := fmt.Sprintf(`{"message":"400 Bad Request","errors":["'%s' is not a valid release slug"]}`, moduleReleaseFilename)
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, err)
@@ -62,6 +64,18 @@ func DownloadModuleRelease(w http.ResponseWriter, r *http.Request) {
 	http.ServeContent(w, r, fileInfo.Name(), fileInfo.ModTime(), file)
 }
 
+// HandleReleases manages the /v3/releases endpoint
+func HandleReleases(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		ListModuleReleases(w, r)
+	case "POST":
+		CreateModuleRelease(w, r)
+	default:
+		// NOT implemented
+	}
+}
+
 /*
 ListModuleReleases returns a list of module releases meeting the specified search criteria and filters. Results are paginated. All of the parameters are optional.
 
@@ -69,17 +83,27 @@ GET /v3/releases
 
 QUERY PARAMETERS
 
-	limit  integer [1..100} Default: 20
+	limit  integer [1..100] Default: 20
 
 	offset integer >= 0 Default: 0
 
-	sort_by Enum["downloads" "release_date" "module"] Desired order in which to return results
+	sort_by Enum["downloads" "release_date" "module"] Desired order in which to return results NOT IMPLEMENTED
 
 	module
 	owner  NOT IMPLEMENTED
 	...    NOT IMPLEMENTED
 */
 func ListModuleReleases(w http.ResponseWriter, r *http.Request) {
+
+	type releaseResponse struct {
+		Pagination *Pagination    `json:"pagination"`
+		Results    []PuppetModule `json:"results"`
+	}
+
+	// only handle GET requests
+	if r.Method != "GET" {
+		return
+	}
 
 	url_query := r.URL.Query()
 	path := r.URL.Path
@@ -89,40 +113,43 @@ func ListModuleReleases(w http.ResponseWriter, r *http.Request) {
 	module_name := r.URL.Query().Get("module")
 
 	var err error
+	var offset int
+	var limit int
 
-	offset := DefaultPageOffset
 	offset_string := r.URL.Query().Get("offset")
-	if offset_string != "" {
+	if offset_string == "" {
+		// offset is not present in the query string, add it with default value
+		offset = DefaultPageOffset
+		url_query.Add("offset", fmt.Sprint(offset))
+	} else {
 		offset, err = strconv.Atoi(offset_string)
 		if err != nil {
-			// if not an integer, report it and let offset = defaultPageOffset
-			// FIXME: this should return an error instead
-			fmt.Printf("expected integer, got %v", offset_string)
+			// 400 BadRequest
+			result := fmt.Sprintf(`{"message":"400 Bad Request","errors":["offset '%s' is not an integer"]}`, offset_string)
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, result)
+			return
 		}
-	} else {
-		// if offset is not present in the query string, add it with default value
-		url_query.Add("offset", fmt.Sprint(offset))
 	}
 
-	limit := DefaultPageLimit
 	limit_string := r.URL.Query().Get("limit")
-	if limit_string != "" {
-		// FIXME: check for err
+	if limit_string == "" {
+		// if limit is not present in the query string, add it with default value
+		limit = DefaultPageLimit
+		url_query.Add("limit", fmt.Sprint(limit))
+	} else {
 		limit, err = strconv.Atoi(limit_string)
 		if err != nil {
-			// if not an integer, report it and let offset = defaultPageOffset
-			// FIXME: this should return an error instead
-			fmt.Printf("expected integer, got %v", offset_string)
+			// 400 BadRequest
+			result := fmt.Sprintf(`{"message":"400 Bad Request","errors":["limit '%s' is not an integer"]}`, limit_string)
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, result)
+			return
 		}
-	} else {
-		// if limit is not present in the query string, add it with default value
-		url_query.Add("limit", fmt.Sprint(limit))
 	}
 
-	//fmt.Printf("module_name: %v\n", module_name)
-
-	// all_matching_modules := get_all_versions_for_module(module_name)
-	// fmt.Printf(forge_cache.cache_root)
 	all_matching_modules := forge_cache.GetModuleVersions(module_name)
 
 	sort.Sort(sort.Reverse(sort.StringSlice(all_matching_modules)))
@@ -132,10 +159,11 @@ func ListModuleReleases(w http.ResponseWriter, r *http.Request) {
 
 	modules_list, _ := get_results(all_matching_modules, offset, limit)
 
-	response := V3ReleaseResponse{Pagination: pagination, Results: modules_list}
+	response := releaseResponse{Pagination: pagination, Results: modules_list}
 
 	jSON, err := json.Marshal(response)
 	if err != nil {
+		// FIXME: handle Marshal error
 		fmt.Printf("Unable to marshal. error:%v", err)
 		return
 	}
@@ -143,8 +171,43 @@ func ListModuleReleases(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateModuleRelease publish a new module or new release of an existing module
+// NOTE: This function is only a placeholder
 func CreateModuleRelease(w http.ResponseWriter, r *http.Request) {
 
+	// only handle POST requests
+	if r.Method != "POST" {
+		return
+	}
+
+	// Check for "Authorization: Bearer <api_key>"" header
+	authorization := r.Header.Get("Authorization")
+	if authorization == "" {
+
+		result := `{"message":"401 Unauthorized","errors":["This endpoint requires a valid Authorization header"]}`
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprint(w, result)
+		return
+	}
+
+	// Return 403 as no upload are allowed
+	result := `{"message":"403 Forbidden","errors":["The provided API key is invalid or has insufficient permissions for the requested operation"]}`
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusForbidden)
+	fmt.Fprint(w, result)
+}
+
+// HandleModuleRelease manages the /v3/releases/{release_slug} endpoint
+func HandleModuleRelease(w http.ResponseWriter, r *http.Request) {
+
+	switch r.Method {
+	case "GET":
+		FetchModuleRelease(w, r)
+	case "DELETE":
+		DeleteModuleRelease(w, r)
+	default:
+		// NOT implemented
+	}
 }
 
 /*
@@ -163,6 +226,11 @@ QUERY PARAMETERS
 	exclude_fields   NOT IMPLEMENTED
 */
 func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
+
+	// only handle GET requests
+	if r.Method != "GET" {
+		return
+	}
 
 	// FIXME: ensure the first 13 bytes in r.URL.Path
 	moduleReleaseSlug := r.URL.Path[13:]
@@ -194,14 +262,45 @@ func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
 
 func DeleteModuleRelease(w http.ResponseWriter, r *http.Request) {
 
+	// only handle DELETE requests
+	if r.Method != "DELETE" {
+		return
+	}
+
+	// Check for "Authorization: Bearer <api_key>"" header
+	authorization := r.Header.Get("Authorization")
+	if authorization == "" {
+
+		result := `{"message":"401 Unauthorized","errors":["This endpoint requires a valid Authorization header"]}`
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprint(w, result)
+		return
+	}
+
+	// Return 403 as no delete are allowed
+	result := `{"message":"403 Forbidden","errors":["The provided API key is invalid or has insufficient permissions for the requested operation"]}`
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusForbidden)
+	fmt.Fprint(w, result)
 }
 
 func ListModuleReleasePlans(w http.ResponseWriter, r *http.Request) {
 
+	// only handle GET requests
+	if r.Method != "GET" {
+		return
+	}
+	// NOT IMPLEMENTED
 }
 
 func FetchModuleReleasePlan(w http.ResponseWriter, r *http.Request) {
 
+	// only handle GET requests
+	if r.Method != "GET" {
+		return
+	}
+	// NOT IMPLEMENTED
 }
 
 func ListModules(w http.ResponseWriter, r *http.Request) {
@@ -233,11 +332,14 @@ func DeleteSearchFilterByID(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-ListUsers provides information about Puppet Forge user accounts. By default,
-results are returned in alphabetical order by username and paginated with 20
-users per page. It's also possible to sort by number of published releases,
-total download counts for all the user's modules, or by the date of the
-user's latest release. All parameters are optional.
+ListUsers provides information about Puppet Forge user accounts.
+
+By default, results are returned in alphabetical order by username and
+paginated with 20 users per page. It's also possible to sort by number
+of published releases, total download counts for all the user's modules,
+or by the date of the user's latest release.
+
+All parameters are optional.
 */
 func ListUsers(w http.ResponseWriter, r *http.Request) {
 
@@ -307,7 +409,7 @@ FetchUser returns data for a single User resource identified by the user's slug 
 GET /v3/users/{user_slug}
 PATH PARAMETERS
 
-user_slug required string  ^[a-zA-Z0-9]+$ example: puppetlabs
+user_slug required string ^[a-zA-Z0-9]+$ example: puppetlabs
 
 Unique textual identifier (slug) of the User resource to retrieve
 */
@@ -329,7 +431,17 @@ func FetchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := NewUser("/v3/users/"+userSlug, userSlug, "12345", userSlug, userSlug, 1, 1, "1970-01-01 01:01", "1970-01-01 01:01")
+	// FIXME: assert that uri begins with "/v3/users/"
+	// FIXME: gravatar_id should be sha256 char long.
+	// FIXME: Need to check that the user exist in cache
+	// FIXME: get release_count
+	// FIXME: get module_count
+	release_count := 1
+	module_count := 1
+	created_at := "1970-01-01 01:01:01 0000" // just make some up
+	updated_at := "1970-01-01 01:01:01 0000" // just make some up
+
+	user, err := NewUser("/v3/users/"+userSlug, userSlug, "12345", userSlug, userSlug, release_count, module_count, created_at, updated_at)
 	if user == nil {
 		// 404
 		// result := `{"message":"404 Not Found","errors":["'The requested resource could not be found"]}`
@@ -340,6 +452,7 @@ func FetchUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jSON, _ := json.Marshal(user)
+	// FIXME: better to catch Marshal error here
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	fmt.Fprint(w, string(jSON))
@@ -366,9 +479,16 @@ func get_user_results(users []string, offset int, limit int) ([]User, error) {
 	create_at := "1970-01-01 01:01:01 0000"  // just make some up
 	updated_at := "1970-01-01 01:01:01 0000" // just make some up
 	gravatar_id := "1234"
+	release_count := 1
+	module_count := 1
 
 	for _, user_name := range users[offset:last] {
-		user, err := NewUser("/v3/user/"+user_name, user_name, gravatar_id, user_name, user_name, 0, 0, create_at, updated_at)
+		// FIXME: assert that uri begins with "/v3/users/"
+		// FIXME: gravatar_id should be sha256 char long.
+		// FIXME: Need to check that the user exist in cache
+		// FIXME: get release_count
+		// FIXME: get module_count
+		user, err := NewUser("/v3/user/"+user_name, user_name, gravatar_id, user_name, user_name, release_count, module_count, create_at, updated_at)
 		if err == nil {
 			result = append(result, *user)
 		}
