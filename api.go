@@ -6,6 +6,7 @@ import (
 	"html"
 	"net/http"
 	"os"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -291,7 +292,12 @@ func ListModuleReleasePlans(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		return
 	}
+
 	// NOT IMPLEMENTED
+	result := `{"message":"404 Not Found","errors":["The requested resource could not be found"]}`
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusNotFound)
+	fmt.Fprint(w, result)
 }
 
 func FetchModuleReleasePlan(w http.ResponseWriter, r *http.Request) {
@@ -301,34 +307,178 @@ func FetchModuleReleasePlan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// NOT IMPLEMENTED
+	result := `{"message":"404 Not Found","errors":["The requested resource could not be found"]}`
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusNotFound)
+	fmt.Fprint(w, result)
 }
 
+/*
+ListModules returns a list of modules meeting the specified search criteria and filters.
+Results are paginated. All of the parameters are optional.
+To publish or delete a Release resource, see Release operations.
+*/
 func ListModules(w http.ResponseWriter, r *http.Request) {
 
+	// only handle GET requests
+	if r.Method != "GET" {
+		return
+	}
+
+	// NOT IMPLEMENTED
+	result := `{"message":"404 Not Found","errors":["The requested resource could not be found"]}`
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusNotFound)
+	fmt.Fprint(w, result)
 }
 
+func IsValidModuleSlug(module_slug string) (bool, error) {
+	return regexp.MatchString("^[a-zA-Z0-9]+[-/][a-z][a-z0-9_]*$", module_slug)
+}
+
+func HandleModules(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		FetchModule(w, r)
+	case "PATCH":
+		DeprecateModule(w, r)
+	case "DELETE":
+		DeleteModule(w, r)
+	default:
+		// NOT implemented
+	}
+}
+
+/*
+FetchModule returns data for a single Module resource identified by the module's slug value.
+
+GET /v3/modules/{module_slug}
+
+PATH PARAMETERS
+module_slug required string ^[a-zA-Z0-9]+[-\/][a-z][a-z0-9_]*$
+*/
 func FetchModule(w http.ResponseWriter, r *http.Request) {
 
+	// only handle GET requests
+	if r.Method != "GET" {
+		return
+	}
+
+	module_slug := r.URL.Path[10:]
+
+	res, _ := IsValidModuleSlug(module_slug)
+	if !res {
+		// 400
+		result := fmt.Sprintf(`{"message":"400 Bad Request","errors":["'%s' is not a valid release slug"]}`, module_slug)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, result)
+		return
+	}
+
+	result := `{"message":"404 Not Found","errors":["The requested resource could not be found"]}`
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusNotFound)
+	fmt.Fprint(w, result)
 }
 
 func DeprecateModule(w http.ResponseWriter, r *http.Request) {
 
+	// only handle PATCH requests
+	if r.Method != "PATCH" {
+		return
+	}
+	// Check for "Authorization: Bearer <api_key>"" header
+	authorization := r.Header.Get("Authorization")
+	if authorization == "" {
+
+		result := `{"message":"401 Unauthorized","errors":["This endpoint requires a valid Authorization header"]}`
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprint(w, result)
+		return
+	}
+
+	// Return 403 as no delete are allowed
+	result := `{"message":"403 Forbidden","errors":["The provided API key is invalid or has insufficient permissions for the requested operation"]}`
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusForbidden)
+	fmt.Fprint(w, result)
 }
 
 func DeleteModule(w http.ResponseWriter, r *http.Request) {
 
+	// only handle DELETE requests
+	if r.Method != "DELETE" {
+		return
+	}
+	// Check for "Authorization: Bearer <api_key>"" header
+	authorization := r.Header.Get("Authorization")
+	if authorization == "" {
+
+		result := `{"message":"401 Unauthorized","errors":["This endpoint requires a valid Authorization header"]}`
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprint(w, result)
+		return
+	}
+
+	// Return 403 as no delete are allowed
+	result := `{"message":"403 Forbidden","errors":["The provided API key is invalid or has insufficient permissions for the requested operation"]}`
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusForbidden)
+	fmt.Fprint(w, result)
+
+}
+
+func HandleSearchFilters(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		CreateSearchFilter(w, r)
+	case "GET":
+		GetUsersSearchFilters(w, r)
+	default:
+		// NOT implemented
+	}
 }
 
 func CreateSearchFilter(w http.ResponseWriter, r *http.Request) {
 
+	// only handle POST requests
+	if r.Method != "POST" {
+		return
+	}
+
+	result := `{"message":"404 Not Found","errors":["The requested resource could not be found"]}`
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusNotFound)
+	fmt.Fprint(w, result)
 }
 
 func GetUsersSearchFilters(w http.ResponseWriter, r *http.Request) {
 
+	// only handle POST requests
+	if r.Method != "POST" {
+		return
+	}
+
+	result := `{"message":"404 Not Found","errors":["The requested resource could not be found"]}`
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusNotFound)
+	fmt.Fprint(w, result)
 }
 
 func DeleteSearchFilterByID(w http.ResponseWriter, r *http.Request) {
 
+	// only handle DELETE requests
+	if r.Method != "DELETE" {
+		return
+	}
+
+	result := `{"message":"403 Forbidden","errors":["The provided API key is invalid or has insufficient permissions for the requested operation"]}`
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusNotFound)
+	fmt.Fprint(w, result)
 }
 
 /*

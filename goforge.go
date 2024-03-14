@@ -133,8 +133,16 @@ func main() {
 		// ListModuleReleases(w, r)
 	})
 
+	http.HandleFunc("/v3/modules/", func(w http.ResponseWriter, r *http.Request) {
+		HandleModules(w, r)
+	})
+
 	http.HandleFunc("/v3/files/", func(w http.ResponseWriter, r *http.Request) {
 		DownloadModuleRelease(w, r)
+	})
+
+	http.HandleFunc("/v3/search_filters", func(w http.ResponseWriter, r *http.Request) {
+		HandleSearchFilters(w, r)
 	})
 
 	http.HandleFunc("/v3/users", func(w http.ResponseWriter, r *http.Request) {
