@@ -2,11 +2,7 @@
 
 Sample list of things to do.
 
-* CreatePagination does not return the correct url for /v3/users. Returns /v3/releases
-
 * Write test for GetAllUsers (or GetUser() )
-
-* Stub out all methods
 
 * Try to use pdk to generate testing modules
   From the puppet documentation on ubuntu 22.04
@@ -28,14 +24,9 @@ Sample list of things to do.
 
 ## Documentation
 
-* Update README.md with Q and A
-* Update with build instructions
-* Update with usage instructions
-
 ## Known bugs
 
 * In pagination the parameter first, previous, current, next does not honor all
   url.Query parameters
-
-* Inital extraction of metadata.json from the module.tar.gz file is implemented.
-  Needs more debugging and better tests.
+  
+* Tests are missing and failing  
