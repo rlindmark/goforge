@@ -1,5 +1,7 @@
 #!/bin/bash
-
+#
+# Script used to list or download modules from <https://forgeapi.puppet.labs/>
+#  so they can be stored locally. Only manages public puppet modules.
 
 URL_FILES="https://forgeapi.puppetlabs.com"
 URL_RELEASES="https://forgeapi.puppetlabs.com/v3/releases"

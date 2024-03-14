@@ -10,6 +10,10 @@ test:
 	@echo '      to populate the cache with some puppet modules.'
 	go test .
 
+test-cover:
+	go test -coverprofile=c.out
+	go tool cover -html="c.out"
+
 build:
 	go build -o $(PROGRAM)
 
