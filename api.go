@@ -82,6 +82,7 @@ QUERY PARAMETERS
 func ListModuleReleases(w http.ResponseWriter, r *http.Request) {
 
 	url_query := r.URL.Query()
+	path := r.URL.Path
 
 	// parse all query parameters
 	// FIXME: there are a lot to manage
@@ -127,7 +128,7 @@ func ListModuleReleases(w http.ResponseWriter, r *http.Request) {
 	sort.Sort(sort.Reverse(sort.StringSlice(all_matching_modules)))
 	total := len(all_matching_modules)
 
-	pagination, _ := CreatePagination(url_query, total)
+	pagination, _ := CreatePagination(path, url_query, total)
 
 	modules_list, _ := get_results(all_matching_modules, offset, limit)
 
@@ -246,7 +247,7 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url_query := r.URL.Query()
-
+	path := r.URL.Path
 	// parse all query parameters
 	// FIXME: there are a lot to manage
 
@@ -286,7 +287,7 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 	sort.Sort(sort.Reverse(sort.StringSlice(users)))
 	total := len(users)
 
-	pagination, _ := CreatePagination(url_query, total)
+	pagination, _ := CreatePagination(path, url_query, total)
 
 	user_list, _ := get_user_results(users, offset, limit)
 

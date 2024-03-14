@@ -16,7 +16,7 @@ type Pagination struct {
 	Total    int     `json:"total"`
 }
 
-func CreatePagination(query url.Values, total int) (*Pagination, error) {
+func CreatePagination(path string, query url.Values, total int) (*Pagination, error) {
 	var previous_page *string
 	var current_page *string
 	var next_page *string
@@ -53,7 +53,7 @@ func CreatePagination(query url.Values, total int) (*Pagination, error) {
 		return nil, fmt.Errorf("total=%d must be >= 0", total)
 	}
 
-	first_page := fmt.Sprintf("/v3/releases?offset=%d&limit=%d", offset, limit)
+	first_page := fmt.Sprintf("%s?offset=%d&limit=%d", path, offset, limit)
 
 	//"first": "/v3/modules?offset=0&limit=20",
 	if offset < limit {
@@ -64,7 +64,7 @@ func CreatePagination(query url.Values, total int) (*Pagination, error) {
 		previous_query.Set("offset", fmt.Sprint(offset-limit))
 		previous_escaped, _ := url.QueryUnescape(previous_query.Encode())
 		previous_unescaped, _ := url.QueryUnescape(previous_escaped)
-		str := "/v3/releases?" + previous_unescaped
+		str := fmt.Sprintf("%s?%s", path, previous_unescaped)
 		previous_page = &str
 	}
 
@@ -72,7 +72,7 @@ func CreatePagination(query url.Values, total int) (*Pagination, error) {
 	current_query.Set("offset", fmt.Sprint(offset))
 	current_escaped, _ := url.QueryUnescape(current_query.Encode())
 	current_unescaped, _ := url.QueryUnescape(current_escaped)
-	str := "/v3/releases?" + current_unescaped
+	str := fmt.Sprintf("%s?%s", path, current_unescaped)
 	current_page = &str
 
 	if offset+limit < total {
@@ -80,7 +80,8 @@ func CreatePagination(query url.Values, total int) (*Pagination, error) {
 		next_query.Set("offset", fmt.Sprint(offset+limit))
 		next_escaped, _ := url.QueryUnescape(next_query.Encode())
 		next_unescaped, _ := url.QueryUnescape(next_escaped)
-		str2 := "/v3/releases?" + next_unescaped
+		str2 := fmt.Sprintf("%s?%s", path, next_unescaped)
+		//str2 := "/v3/releases?" + next_unescaped
 		next_page = &str2
 	} else {
 		next_page = nil

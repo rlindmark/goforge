@@ -84,7 +84,7 @@ func TestCreatePagination(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Incorrect test data")
 		}
-		pagination, err := CreatePagination(params, test.total)
+		pagination, err := CreatePagination("/v3/releases", params, test.total)
 
 		if err != nil {
 			//fmt.Printf("error %v\n", err)
