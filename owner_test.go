@@ -16,8 +16,11 @@ func TestIsValidOwnerSlug(t *testing.T) {
 		{"Puppetlabs", true},
 		{"p", true},
 		{"0", true},
+		{"0a", true},
 		{"puppet labs", false},
 		{"", false},
+		{"ö", false},
+		{"aö", false},
 	}
 
 	for _, test := range testCases {
@@ -25,7 +28,7 @@ func TestIsValidOwnerSlug(t *testing.T) {
 		result, _ := IsValidOwnerSlug(test.slug)
 
 		if result != test.expect {
-			fmt.Printf("For %v: got %v, expected %v", test.slug, result, test.expect)
+			t.Errorf("Testing %v: got %v, expected %v", test.slug, result, test.expect)
 		}
 	}
 }
