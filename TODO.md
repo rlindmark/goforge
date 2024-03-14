@@ -2,6 +2,10 @@
 
 Sample list of things to do.
 
+* CreatePagination does not return the correct url for /v3/users. Returns /v3/releases
+
+* Write test for GetAllUsers (or GetUser() )
+
 * Stub out all methods
 
 * Try to use pdk to generate testing modules
