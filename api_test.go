@@ -98,3 +98,32 @@ func TestListUsers(t *testing.T) {
 		}
 	})
 }
+
+func TestFetchUser(t *testing.T) {
+	var testCases = []struct {
+		path          string
+		statusCode    int
+		contentLength int
+		response      string
+	}{
+		{"/v3/users/puppetlabs", 200, 161699, "ok"},
+		{"/v3/userss/puppetlabs", 500, 161699, "ok"},
+	}
+
+	t.Run("returns a forge user", func(t *testing.T) {
+
+		for _, test := range testCases {
+
+			request, _ := http.NewRequest(http.MethodGet, test.path, nil)
+			response := httptest.NewRecorder()
+
+			FetchUser(response, request)
+
+			//got := response.Body.String()
+			got := response.Result().StatusCode
+			if got != test.statusCode {
+				t.Errorf("expected statuscode = %d got %d", test.statusCode, got)
+			}
+		}
+	})
+}

@@ -6,6 +6,7 @@ import (
 	"html"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
@@ -569,7 +570,16 @@ func FetchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userSlug := r.URL.Path[10:]
+	// Programming error. The calling code should make sure this does not happen
+	if filepath.Dir(r.URL.Path) != "/v3/users" {
+		result := fmt.Sprintf(`{"message":"500 Internal Server Error","errors":["Internal Server Error. Path=%v"]}`, r.URL.Path)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, result)
+		return
+	}
+
+	userSlug := r.URL.Path[len("/v3/users/"):]
 
 	res, _ := IsValidUserSlug(userSlug)
 	if !res {
@@ -581,15 +591,14 @@ func FetchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// FIXME: assert that uri begins with "/v3/users/"
 	// FIXME: gravatar_id should be sha256 char long.
 	// FIXME: Need to check that the user exist in cache
 	// FIXME: get release_count
 	// FIXME: get module_count
 	release_count := 1
 	module_count := 1
-	created_at := "1970-01-01 01:01:01 0000" // just make some up
-	updated_at := "1970-01-01 01:01:01 0000" // just make some up
+	created_at := "1970-01-01 01:01:01 0000" // just make something up
+	updated_at := "1970-01-01 01:01:01 0000" // just make something up
 
 	user, err := NewUser("/v3/users/"+userSlug, userSlug, "12345", userSlug, userSlug, release_count, module_count, created_at, updated_at)
 	if user == nil {
@@ -609,7 +618,7 @@ func FetchUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+	fmt.Fprintf(w, "Welcome to goforge. A limited implementation of the puppet forgeapi, %q", html.EscapeString(r.URL.Path))
 }
 
 func get_user_results(users []string, offset int, limit int) ([]User, error) {
