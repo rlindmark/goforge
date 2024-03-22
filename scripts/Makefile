@@ -4,7 +4,7 @@ SHELLCHECK=shellcheck
 all: lint build test
 
 lint: 
-	${SHELLCHECK} query_forge.sh
+	${SHELLCHECK} forgecli.sh
 
 build:
 	@echo "${MAKE} build not implemented"
