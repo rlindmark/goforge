@@ -54,7 +54,6 @@ func TestValidModuleReleaseFile(t *testing.T) {
 			if err == nil && test.err == nil {
 				fmt.Printf("pass\n")
 			} else {
-				//if !errors.Is(err, test.err) {
 				if err.Error() != test.err.Error() {
 					t.Errorf("expected %t, got %t, err = %v, wants err = %v\n", test.expect, result, err, test.err)
 				}
@@ -64,8 +63,6 @@ func TestValidModuleReleaseFile(t *testing.T) {
 				t.Errorf("expected %t, got %t, err = %v, wants err = %v\n", test.expect, result, err, test.err)
 			}
 		}
-		// 	fmt.Printf("result = nil and err=%s\n", err)
-		// }
 	}
 
 }

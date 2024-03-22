@@ -77,17 +77,14 @@ func get_metadataJSON(owner_module_version string) (json.RawMessage, error) {
 func get_metadata(owner_module_version string) (string, error) {
 
 	srcFile, _ := ModuleReleaseFilenameInCache(owner_module_version + ".tar.gz")
-	//num := 1
 	f, err := os.Open(srcFile)
 	if err != nil {
-		//fmt.Println(err)
 		return "", err
 	}
 	defer f.Close()
 
 	gzf, err := gzip.NewReader(f)
 	if err != nil {
-		//fmt.Println(err)
 		return "", err
 	}
 
@@ -102,7 +99,6 @@ func get_metadata(owner_module_version string) (string, error) {
 		}
 
 		if err != nil {
-			//fmt.Println(err)
 			return "", err
 		}
 
@@ -112,7 +108,6 @@ func get_metadata(owner_module_version string) (string, error) {
 		case tar.TypeDir:
 			continue
 		case tar.TypeReg:
-			//fmt.Println("(", i, ")", "Name: ", name)
 			if name == owner_module_version+"/metadata.json" {
 				metadata, err := io.ReadAll(tarReader)
 				return string(metadata), err
