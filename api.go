@@ -28,11 +28,16 @@ func DownloadModuleRelease(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Module release filename to be downloaded (e.g. "puppetlabs-apache-2.0.0.tar.gz")
-	moduleReleaseFilename := r.URL.Path[10:]
-	// FIXME: test that r.URL.Path[0-9] is "/v3/files/" Return a 5xx error in such case
+	if filepath.Dir(r.URL.Path) != "/v3/files" {
+		result := fmt.Sprintf(`{"message":"500 Internal Server Error","errors":["Internal Server Error. Path=%v"]}`, r.URL.Path)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, result)
+		return
+	}
 
-	// test that filename is legal
+	moduleReleaseFilename := r.URL.Path[len("/v3/files/"):]
+
 	res, err := ValidModuleReleaseFilename(moduleReleaseFilename)
 	if !res {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")

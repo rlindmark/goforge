@@ -6,6 +6,34 @@ import (
 	"testing"
 )
 
+func TestDownloadModuleRelease(t *testing.T) {
+	var testCases = []struct {
+		path       string
+		statusCode int
+	}{
+		{"/v2/files/puppetlabs", 500},
+		{"/v3/files/puppetlabs", 400},
+		{"/v3/files/not-found-0.0.1.tar.gz", 404},
+	}
+
+	t.Run("returns a forge user", func(t *testing.T) {
+
+		for _, test := range testCases {
+
+			request, _ := http.NewRequest(http.MethodGet, test.path, nil)
+			response := httptest.NewRecorder()
+
+			DownloadModuleRelease(response, request)
+
+			//got := response.Body.String()
+			got := response.Result().StatusCode
+			if got != test.statusCode {
+				t.Errorf("expected statuscode = %d got %d", test.statusCode, got)
+			}
+		}
+	})
+}
+
 func TestCreateModuleRelease(t *testing.T) {
 
 	t.Run("create a forge module", func(t *testing.T) {
@@ -43,8 +71,7 @@ func TestFetchModuleRelease(t *testing.T) {
 	}{
 		{"/v3/releases/puppetlabs-stdlib-9.4.1", 200, -1, "ok"},
 		{"/v3/releases/puppetlabs-stdlib-9.4.0", 200, -1, "ok"},
-		{"/v3/releases/puppetlabs-stdlib-1.0.0", 404, -1, "ok"},
-		{"/v3/releases/puppetlabs-stdlib-1.0.0", 404, -1, "ok"},
+		{"/v3/releases/puppetlabs-stdlib-0.0.0", 404, -1, "ok"},
 	}
 
 	t.Run("returns a forge module", func(t *testing.T) {
@@ -101,13 +128,12 @@ func TestListUsers(t *testing.T) {
 
 func TestFetchUser(t *testing.T) {
 	var testCases = []struct {
-		path          string
-		statusCode    int
-		contentLength int
-		response      string
+		path       string
+		statusCode int
 	}{
-		{"/v3/users/puppetlabs", 200, 161699, "ok"},
-		{"/v3/userss/puppetlabs", 500, 161699, "ok"},
+		{"/v3/users/puppetlabs", 200},
+		{"/v3/userss/puppetlabs", 500},
+		{"/v4/users/puppetlabs", 500},
 	}
 
 	t.Run("returns a forge user", func(t *testing.T) {

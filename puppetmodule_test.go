@@ -12,7 +12,7 @@ func TestNewPuppetModule(t *testing.T) {
 		uri    string
 		expect bool
 	}{
-		{"puppetlabs-stdlib-1.0.0", false},
+		{"puppetlabs-stdlib-0.0.0", false},
 	}
 
 	for _, test := range testCases {
