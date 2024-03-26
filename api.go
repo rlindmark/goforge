@@ -239,8 +239,15 @@ func FetchModuleRelease(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// FIXME: ensure the first 13 bytes in r.URL.Path
-	moduleReleaseSlug := r.URL.Path[13:]
+	if filepath.Dir(r.URL.Path) != "/v3/releases" {
+		result := fmt.Sprintf(`{"message":"500 Internal Server Error","errors":["Internal Server Error. Path=%v"]}`, r.URL.Path)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, result)
+		return
+	}
+
+	moduleReleaseSlug := r.URL.Path[len("/v3/releases/"):]
 
 	res, err := ValidModuleReleaseSlug(moduleReleaseSlug)
 	if !res {
