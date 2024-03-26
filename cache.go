@@ -45,13 +45,13 @@ func (c *ForgeCache) GetModuleFilePath(release_slug string) (string, error) {
 		return "", err
 	}
 
-	owner, module, version, err := SplitModuleName(release_slug)
+	owner, _, _, err := SplitModuleName(release_slug)
 	if err != nil {
 		return "", err
 	}
 
 	hash_path := Module_hash(release_slug)
-	path := filepath.Join(c.cache_root, hash_path, owner, module, version)
+	path := filepath.Join(c.cache_root, hash_path, owner, release_slug)
 
 	if FileInCache(path + ".tar.gz") {
 		return path + ".tar.gz", nil
