@@ -2,6 +2,9 @@
 
 Sample list of things to do.
 
+* FetchUser()
+  Stub out query parameters
+
 * Write test for GetAllUsers (or GetUser() )
 
 * Try to use pdk to generate testing modules
@@ -21,6 +24,9 @@ Sample list of things to do.
 * Maybe rearrange project into main, api, cache for better code separation.
 
 * Create /api and move the fetch code into that directory
+
+* Implement exclude_field in query string
+    Sample code has exclude_fields=readme,changelog,license,reference,tags
 
 ## Documentation
 
