@@ -11,7 +11,7 @@ type Module struct {
 	Slug          string  `json:"slug"`
 	Name          string  `json:"name"`
 	Deprecated_at *string `json:"deprecated_at"`
-	Owner         *Owner
+	Owner         *Owner  `json:"owner"`
 }
 
 func isValidModuleSlug(slug string) (bool, error) {
@@ -39,12 +39,13 @@ func NewModule(owner_module string) (*Module, error) {
 	// FIXME: need to validate owner_module
 	module_name := strings.Split(owner_module, "-")[1]
 	module_owner := strings.Split(owner_module, "-")[0]
+
 	var module_deprecated_at *string = nil
 
 	owner_uri := fmt.Sprintf("/v3/users/%s", module_owner)
 	owner_slug := module_owner
 	owner_username := module_owner
-	owner_gravatar_id := "nogravatar"
+	owner_gravatar_id := GetGravatarId(owner_slug)
 	owner, err := NewOwner(owner_uri, owner_slug, owner_username, owner_gravatar_id)
 	if err != nil {
 		return nil, fmt.Errorf("cant create module with invalid uri:%v. Err=%v", owner_uri, err)

@@ -139,8 +139,7 @@ func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 	file_in_cache, _ := ModuleReleaseFilenameInCache(owner_module_version_tgz)
 
 	uri := fmt.Sprintf("/v3/releases/%s", owner_module_version)
-	//ok, _ := isValidModuleName(module_name)
-	//filename := fmt.Sprintf("%s.tar.gz", owner_module_version)
+
 	if !FileInCache(file_in_cache) {
 		return nil, fmt.Errorf(`{"message":"404 Not Found","errors":["'The requested resource could not be found"]}`)
 	}
@@ -148,7 +147,7 @@ func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 	module, _ := NewModule(fmt.Sprintf("%s-%s", module_owner, module_name))
 	version := module_version
 
-	metadata, _ := get_metadataJSON(owner_module_version) // need to get this from metadata.json
+	metadata, _ := get_metadataJSON(owner_module_version)
 	tags := "[ string ]"
 	supported := true
 	pdk := "true"

@@ -91,7 +91,7 @@ func TestModuleMarshal(t *testing.T) {
 		expect_url string
 	}{
 		{"puppetlabs-module",
-			`{"uri":"/v3/modules/puppetlabs-module","slug":"puppetlabs-module","name":"module","deprecated_at":null,"Owner":{"uri":"/v3/users/puppetlabs","slug":"puppetlabs","username":"puppetlabs","gravatar_id":"nogravatar"}}`,
+			`{"uri":"/v3/modules/puppetlabs-module","slug":"puppetlabs-module","name":"module","deprecated_at":null,"owner":{"uri":"/v3/users/puppetlabs","slug":"puppetlabs","username":"puppetlabs","gravatar_id":"nogravatardefined"}}`,
 		},
 	}
 

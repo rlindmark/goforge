@@ -73,7 +73,7 @@ func TestCreatePagination(t *testing.T) {
 			"limit=20&offset=0&name=puppetlabs-stdlib-9.0.1",
 			1,
 			//`{"limit":20,"offset":0,"first":"/v3/releases?offset=0&limit=20","previous":null,"current":"/v3/releases?limit=20&name=puppetlabs-stdlib-9.0.1&offset=0","next":null,"total":1}`,
-			`{"limit":20,"offset":0,"first":"/v3/releases?offset=0\u0026limit=20","previous":null,"current":"/v3/releases?limit=20\u0026name=puppetlabs-stdlib-9.0.1\u0026offset=0","next":null,"total":1}`,
+			`{"limit":20,"offset":0,"first":"/v3/releases?limit=20\u0026name=puppetlabs-stdlib-9.0.1\u0026offset=0","previous":null,"current":"/v3/releases?limit=20\u0026name=puppetlabs-stdlib-9.0.1\u0026offset=0","next":null,"total":1}`,
 			nil,
 		},
 	}
@@ -94,7 +94,7 @@ func TestCreatePagination(t *testing.T) {
 		} else {
 			result, _ := json.Marshal(pagination)
 			if string(result) != test.expect {
-				t.Errorf("TestCreatePagination: Got %v, expected %v\n", string(result), test.expect)
+				t.Errorf("Given %v: Got %v, expected %v\n", test.params, string(result), test.expect)
 			}
 		}
 	}

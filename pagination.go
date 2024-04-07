@@ -53,7 +53,14 @@ func CreatePagination(path string, query url.Values, total int) (*Pagination, er
 		return nil, fmt.Errorf("total=%d must be >= 0", total)
 	}
 
-	first_page := fmt.Sprintf("%s?offset=%d&limit=%d", path, offset, limit)
+	first_query := m
+	first_query.Set("offset", fmt.Sprintf("%d", offset))
+	first_query.Set("limit", fmt.Sprintf("%d", limit))
+	first_escaped, _ := url.QueryUnescape(first_query.Encode())
+	first_unescaped, _ := url.QueryUnescape(first_escaped)
+	str := fmt.Sprintf("%s?%s", path, first_unescaped)
+	first_page := str
+	//first_page := fmt.Sprintf("%s?offset=%d&limit=%d", path, offset, limit)
 
 	//"first": "/v3/modules?offset=0&limit=20",
 	if offset < limit {
@@ -72,7 +79,7 @@ func CreatePagination(path string, query url.Values, total int) (*Pagination, er
 	current_query.Set("offset", fmt.Sprint(offset))
 	current_escaped, _ := url.QueryUnescape(current_query.Encode())
 	current_unescaped, _ := url.QueryUnescape(current_escaped)
-	str := fmt.Sprintf("%s?%s", path, current_unescaped)
+	str = fmt.Sprintf("%s?%s", path, current_unescaped)
 	current_page = &str
 
 	if offset+limit < total {
@@ -81,7 +88,6 @@ func CreatePagination(path string, query url.Values, total int) (*Pagination, er
 		next_escaped, _ := url.QueryUnescape(next_query.Encode())
 		next_unescaped, _ := url.QueryUnescape(next_escaped)
 		str2 := fmt.Sprintf("%s?%s", path, next_unescaped)
-		//str2 := "/v3/releases?" + next_unescaped
 		next_page = &str2
 	} else {
 		next_page = nil

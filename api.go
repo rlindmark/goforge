@@ -566,6 +566,24 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(jSON))
 }
 
+func GetGravatarId(username string) string {
+	// FIXME: gravatar_id should be sha256 char long.
+
+	return "nogravatardefined"
+}
+
+// GetModuleReleaseCount returns the total number of released modules username has
+func GetModuleReleaseCount(_username string) int {
+	// FIXME: Implement code
+	return 1
+}
+
+// GetModuleCount returns how many modules username has
+func GetModuleCount(_username string) int {
+	// FIXME: Implement code
+	return 1
+}
+
 /*
 FetchUser returns data for a single User resource identified by the user's slug value.
 
@@ -574,7 +592,20 @@ PATH PARAMETERS
 
 user_slug required string ^[a-zA-Z0-9]+$ example: puppetlabs
 
-Unique textual identifier (slug) of the User resource to retrieve
+# Unique textual identifier (slug) of the User resource to retrieve
+
+# QUERY PARAMETERS
+
+with_html	boolean Render markdown files (README, REFERENCE, etc.) to HTML before returning results
+
+include_fields	Array of strings
+Example: include_fields=docs
+List of top level keys to include in response object, only applies to fields marked 'optional'
+
+exclude_fields	Array of strings
+
+Example: exclude_fields=readme changelog license reference
+List of top level keys to exclude from response object
 */
 func FetchUser(w http.ResponseWriter, r *http.Request) {
 
@@ -582,8 +613,8 @@ func FetchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Programming error. The calling code should make sure this does not happen
 	if filepath.Dir(r.URL.Path) != "/v3/users" {
+		// This is a programming error. The calling code should make sure this does not happen
 		result := fmt.Sprintf(`{"message":"500 Internal Server Error","errors":["Internal Server Error. Path=%v"]}`, r.URL.Path)
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -603,16 +634,25 @@ func FetchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// FIXME: gravatar_id should be sha256 char long.
+	// parse extra query parameters
+	q := r.URL.Query()
+	with_http := q.Get("with_http")
+	fmt.Printf("with_http:%v", with_http)
+	include_fields := q.Get("include_fields")
+	fmt.Printf("include_fields:%v", include_fields)
+	exclude_fields := q.Get("exclude_fields")
+	fmt.Printf("exclude_fields:%v", exclude_fields)
+
 	// FIXME: Need to check that the user exist in cache
-	// FIXME: get release_count
-	// FIXME: get module_count
-	release_count := 1
-	module_count := 1
+	release_count := GetModuleReleaseCount(userSlug)
+	module_count := GetModuleCount(userSlug)
+
+	gravatar_id := GetGravatarId(userSlug)
+
 	created_at := "1970-01-01 01:01:01 0000" // just make something up
 	updated_at := "1970-01-01 01:01:01 0000" // just make something up
 
-	user, err := NewUser("/v3/users/"+userSlug, userSlug, "12345", userSlug, userSlug, release_count, module_count, created_at, updated_at)
+	user, err := NewUser("/v3/users/"+userSlug, userSlug, gravatar_id, userSlug, userSlug, release_count, module_count, created_at, updated_at)
 	if user == nil {
 		// 404
 		// result := `{"message":"404 Not Found","errors":["'The requested resource could not be found"]}`
@@ -633,6 +673,14 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to goforge. A limited implementation of the puppet forgeapi, %q", html.EscapeString(r.URL.Path))
 }
 
+func GetUserCreatedAt(username string) string {
+	return "1970-01-01 01:01:01 0000" // just make some up
+}
+
+func GetUserUpdatedAt(username string) string {
+	return "1970-01-01 01:01:01 0000" // just make some up
+}
+
 func get_user_results(users []string, offset int, limit int) ([]User, error) {
 
 	// assert first >= 0
@@ -647,19 +695,20 @@ func get_user_results(users []string, offset int, limit int) ([]User, error) {
 	}
 	last := min(total, offset+limit)
 
-	create_at := "1970-01-01 01:01:01 0000"  // just make some up
-	updated_at := "1970-01-01 01:01:01 0000" // just make some up
-	gravatar_id := "1234"
 	release_count := 1
 	module_count := 1
 
 	for _, user_name := range users[offset:last] {
 		// FIXME: assert that uri begins with "/v3/users/"
-		// FIXME: gravatar_id should be sha256 char long.
 		// FIXME: Need to check that the user exist in cache
 		// FIXME: get release_count
 		// FIXME: get module_count
-		user, err := NewUser("/v3/user/"+user_name, user_name, gravatar_id, user_name, user_name, release_count, module_count, create_at, updated_at)
+		gravatar_id := GetGravatarId(user_name)
+
+		created_at := GetUserCreatedAt(user_name)
+		updated_at := GetUserUpdatedAt(user_name)
+
+		user, err := NewUser("/v3/user/"+user_name, user_name, gravatar_id, user_name, user_name, release_count, module_count, created_at, updated_at)
 		if err == nil {
 			result = append(result, *user)
 		}

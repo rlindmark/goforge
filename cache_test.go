@@ -81,7 +81,7 @@ func TestGetModuleVersions(t *testing.T) {
 		{"p", []string{""}},
 		{"puppetlabs-stdlib", []string{""}},
 		{"puppetlabs-stdlib-9.4.0", []string{"cache/p/puppetlabs/puppetlabs-stdlib-9.4.0.tar.gz"}},
-		{"puppetlabs-stdlib-9.3.0", []string{"cache/p/puppetlabs/puppetlabs-stdlib-9.3.0.tar.gz"}},
+		// {"puppetlabs-stdlib-9.3.0", []string{"cache/p/puppetlabs/puppetlabs-stdlib-9.3.0.tar.gz"}},
 	}
 
 	c := NewForgeCache("cache")
@@ -90,7 +90,7 @@ func TestGetModuleVersions(t *testing.T) {
 
 		result := c.GetModuleVersions(test.module_name)
 
-		fmt.Printf("GetModuleVersions(%v)=%v", test.module_name, result)
+		fmt.Printf("GetModuleVersions(%v)=%v\n", test.module_name, result)
 		// if result != test.expect {
 		// 	t.Errorf("GetModuleFilePath(%v): got %v err=%v, expected %v", test.module_name, result, err, test.expect)
 		// }

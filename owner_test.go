@@ -25,7 +25,7 @@ func TestIsValidOwnerSlug(t *testing.T) {
 
 	for _, test := range testCases {
 
-		result, _ := IsValidOwnerSlug(test.slug)
+		result, _ := isValidOwnerSlug(test.slug)
 
 		if result != test.expect {
 			t.Errorf("Testing %v: got %v, expected %v", test.slug, result, test.expect)
