@@ -5,6 +5,11 @@ Sample list of things to do.
 * FetchUser()
   Stub out query parameters
 
+* FetchModule()
+  * Need some new type definitions to Marshal json
+  * Testing
+  * Stub out query parameters
+
 * Write test for GetAllUsers (or GetUser() )
 
 * Try to use pdk to generate testing modules
