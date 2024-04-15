@@ -84,7 +84,8 @@ func HandleReleases(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-ListModuleReleases returns a list of module releases meeting the specified search criteria and filters. Results are paginated. All of the parameters are optional.
+ListModuleReleases returns a list of module releases meeting the specified search criteria and filters.
+Results are paginated. All of the parameters are optional.
 
 GET /v3/releases
 
@@ -162,11 +163,18 @@ func ListModuleReleases(w http.ResponseWriter, r *http.Request) {
 	sort.Sort(sort.Reverse(sort.StringSlice(all_matching_modules)))
 	total := len(all_matching_modules)
 
-	pagination, _ := CreatePagination(path, url_query, total)
+	pagination, err := CreatePagination(path, url_query, total)
+	if err != nil {
+		result := fmt.Sprintf(`{"message":"400 Bad Request","errors":["%v"]}`, err)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, result)
+		return
+	}
 
-	modules_list, _ := get_results(all_matching_modules, offset, limit)
+	modules, _ := get_PuppetModules(all_matching_modules, offset, limit)
 
-	response := releaseResponse{Pagination: pagination, Results: modules_list}
+	response := releaseResponse{Pagination: pagination, Results: modules}
 
 	jSON, err := json.Marshal(response)
 	if err != nil {
@@ -369,6 +377,18 @@ GET /v3/modules/{module_slug}
 
 PATH PARAMETERS
 module_slug required string ^[a-zA-Z0-9]+[-\/][a-z][a-z0-9_]*$
+Example: puppetlabs-apache
+
+QUERY PARAMETERS
+with_html boolean Render markdown files (README, REFERENCE, etc.) to HTML before returning results
+
+include_fields Array of strings
+Example: include_fields=docs
+List of top level keys to include in response object, only applies to fields marked 'optional'
+
+exclude_fields Array of strings
+Example: exclude_fields=readme changelog license reference
+List of top level keys to exclude from response object
 */
 func FetchModule(w http.ResponseWriter, r *http.Request) {
 
@@ -534,17 +554,17 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 
 	limit := DefaultPageLimit
 	limit_string := r.URL.Query().Get("limit")
-	if limit_string != "" {
-		// FIXME: check for err
+	if limit_string == "" {
+		// if limit is not present in the query string, add it with default value
+		url_query.Add("limit", fmt.Sprint(limit))
+	} else {
 		limit, err = strconv.Atoi(limit_string)
 		if err != nil {
 			// if not an integer, report it and let offset = defaultPageOffset
-			// FIXME: this should return an error instead
-			fmt.Printf("expected integer, got %v", offset_string)
+			fmt.Printf("expected integer, got %v", limit_string)
+			url_query.Add("limit", fmt.Sprint(DefaultPageLimit))
 		}
-	} else {
-		// if limit is not present in the query string, add it with default value
-		url_query.Add("limit", fmt.Sprint(limit))
+
 	}
 
 	users := forge_cache.GetAllUsers()
@@ -552,7 +572,14 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 	sort.Sort(sort.Reverse(sort.StringSlice(users)))
 	total := len(users)
 
-	pagination, _ := CreatePagination(path, url_query, total)
+	pagination, err := CreatePagination(path, url_query, total)
+	if err != nil {
+		result := fmt.Sprintf(`{"message":"400 Bad Request","errors":["%v"]}`, err)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(w, result)
+		return
+	}
 
 	user_list, _ := get_user_results(users, offset, limit)
 
@@ -649,8 +676,8 @@ func FetchUser(w http.ResponseWriter, r *http.Request) {
 
 	gravatar_id := GetGravatarId(userSlug)
 
-	created_at := "1970-01-01 01:01:01 0000" // just make something up
-	updated_at := "1970-01-01 01:01:01 0000" // just make something up
+	created_at := GetUserCreatedAt(userSlug)
+	updated_at := GetUserUpdatedAt(userSlug)
 
 	user, err := NewUser("/v3/users/"+userSlug, userSlug, gravatar_id, userSlug, userSlug, release_count, module_count, created_at, updated_at)
 	if user == nil {
@@ -715,7 +742,7 @@ func get_user_results(users []string, offset int, limit int) ([]User, error) {
 	}
 	return result, nil
 }
-func get_results(all_modules []string, offset int, limit int) ([]PuppetModule, error) {
+func get_PuppetModules(all_modules []string, offset int, limit int) ([]PuppetModule, error) {
 
 	// assert first >= 0
 	// assert last >= first
