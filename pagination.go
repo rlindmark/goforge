@@ -54,7 +54,7 @@ func CreatePagination(path string, query url.Values, total int) (*Pagination, er
 	}
 
 	first_query := m
-	first_query.Set("offset", fmt.Sprintf("%d", offset))
+	first_query.Set("offset", "0")
 	first_query.Set("limit", fmt.Sprintf("%d", limit))
 	first_escaped, _ := url.QueryUnescape(first_query.Encode())
 	first_unescaped, _ := url.QueryUnescape(first_escaped)
