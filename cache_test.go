@@ -27,26 +27,26 @@ func TestFileInCache(t *testing.T) {
 	}
 }
 
-func TestModulePathInCache(t *testing.T) {
-	var testCases = []struct {
-		module_name string
-		expect      string
-	}{
-		{"puppetlabs-stdlib-9.4.1.tar.gz", "cache/p/puppetlabs/puppetlabs-stdlib-9.4.1.tar.gz"},
-		{"puppetlabs-stdlib-9.4.0.tar.gz", "cache/p/puppetlabs/puppetlabs-stdlib-9.4.0.tar.gz"},
-		{"puppetlabs-stdlib-9.3.0.tar.gz", "cache/p/puppetlabs/puppetlabs-stdlib-9.3.0.tar.gz"},
-		{"p", "cache/p/p/p"},
-	}
+// func TestModulePathInCache(t *testing.T) {
+// 	var testCases = []struct {
+// 		module_name string
+// 		expect      string
+// 	}{
+// 		{"puppetlabs-stdlib-9.4.1.tar.gz", "cache/p/puppetlabs/puppetlabs-stdlib-9.4.1.tar.gz"},
+// 		{"puppetlabs-stdlib-9.4.0.tar.gz", "cache/p/puppetlabs/puppetlabs-stdlib-9.4.0.tar.gz"},
+// 		{"puppetlabs-stdlib-9.3.0.tar.gz", "cache/p/puppetlabs/puppetlabs-stdlib-9.3.0.tar.gz"},
+// 		{"p", "cache/p/p/p"},
+// 	}
 
-	for _, test := range testCases {
+// 	for _, test := range testCases {
 
-		result, _ := ModulePathInCache(test.module_name)
+// 		result, _ := ModulePathInCache(test.module_name)
 
-		if result != test.expect {
-			t.Errorf("TestModulePathInCache %v: got %v, expected %v", test.module_name, result, test.expect)
-		}
-	}
-}
+// 		if result != test.expect {
+// 			t.Errorf("TestModulePathInCache %v: got %v, expected %v", test.module_name, result, test.expect)
+// 		}
+// 	}
+// }
 
 func TestGetModuleFilePath(t *testing.T) {
 	var testCases = []struct {

@@ -62,8 +62,6 @@ func (c *ForgeCache) GetModuleFilePath(release_slug string) (string, error) {
 // GetModuleVersions returns a list of filepaths for the module slug in the cache
 func (c ForgeCache) GetModuleVersions(module_slug string) []string {
 
-	//base := Forge_cache()
-
 	ok, _ := isValidModuleSlug(module_slug)
 	if !ok {
 		return nil
@@ -98,21 +96,17 @@ func (c ForgeCache) GetAllUsers() []string {
 	}
 	return vsm
 	// FIXME: only return directories and not files
-	// for _, file := range files {
-	// 	fmt.Println(file)
-	// }
-
-	// return files
 }
 
-func ModulePathInCache(module_name string) (string, error) {
-	if len(module_name) < 1 {
-		return module_name, fmt.Errorf("module_name to short:%v", module_name)
-	}
-	cache := module_name[0]
-	module_owner := strings.Split(module_name, "-")[0]
-	return fmt.Sprintf("%s/%c/%s/%s", DefaultCache, cache, module_owner, module_name), nil
-}
+// ModulePathInCache function not needed
+// func ModulePathInCache(module_name string) (string, error) {
+// 	if len(module_name) < 1 {
+// 		return module_name, fmt.Errorf("module_name to short:%v", module_name)
+// 	}
+// 	cache := module_name[0]
+// 	module_owner := strings.Split(module_name, "-")[0]
+// 	return fmt.Sprintf("%s/%c/%s/%s", DefaultCache, cache, module_owner, module_name), nil
+//}
 
 // Module release filename to be downloaded (e.g. "puppetlabs-apache-2.0.0.tar.gz")
 func ModuleReleaseFilenameInCache(module_name string) (string, error) {
