@@ -599,16 +599,16 @@ func GetGravatarId(username string) string {
 	return "nogravatardefined"
 }
 
-// GetModuleReleaseCount returns the total number of released modules username has
-func GetModuleReleaseCount(_username string) int {
+// GetModuleReleaseCount returns total number of released modules username have in cache
+func GetModuleReleaseCount(username string) int {
 	// FIXME: Implement code
-	return 1
+	return 0
 }
 
-// GetModuleCount returns how many modules username has
-func GetModuleCount(_username string) int {
+// GetModuleCount returns total number of modules username have in cache
+func GetModuleCount(username string) int {
 	// FIXME: Implement code
-	return 1
+	return 0
 }
 
 /*
@@ -671,6 +671,7 @@ func FetchUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("exclude_fields:%v", exclude_fields)
 
 	// FIXME: Need to check that the user exist in cache
+	uri := "/v3/users/" + userSlug
 	release_count := GetModuleReleaseCount(userSlug)
 	module_count := GetModuleCount(userSlug)
 
@@ -679,7 +680,7 @@ func FetchUser(w http.ResponseWriter, r *http.Request) {
 	created_at := GetUserCreatedAt(userSlug)
 	updated_at := GetUserUpdatedAt(userSlug)
 
-	user, err := NewUser("/v3/users/"+userSlug, userSlug, gravatar_id, userSlug, userSlug, release_count, module_count, created_at, updated_at)
+	user, err := NewUser(uri, userSlug, gravatar_id, userSlug, userSlug, release_count, module_count, created_at, updated_at)
 	if user == nil {
 		// 404
 		// result := `{"message":"404 Not Found","errors":["'The requested resource could not be found"]}`
@@ -708,9 +709,21 @@ func GetUserUpdatedAt(username string) string {
 	return "1970-01-01 01:01:01 0000" // just make some up
 }
 
+// GetUserModuleCount returns total number of releases username have in cache
+func GetUserReleaseCount(username string) int {
+	// FIXME: not implemented. Duplicate of GetModuleReleaseCount()
+	return 0
+}
+
+// GetUserModuleCount returns number of modules username have in cache
+func GetUserModuleCount(username string) int {
+	// FIXME: not implemented
+	return 0
+}
+
 func get_user_results(users []string, offset int, limit int) ([]User, error) {
 
-	// assert first >= 0
+	// assert offset >= 0
 	// assert last >= first
 	// len(all_modules) >= last
 
@@ -722,26 +735,27 @@ func get_user_results(users []string, offset int, limit int) ([]User, error) {
 	}
 	last := min(total, offset+limit)
 
-	release_count := 1
-	module_count := 1
+	//release_count := 1
+	//module_count := 1
 
-	for _, user_name := range users[offset:last] {
-		// FIXME: assert that uri begins with "/v3/users/"
-		// FIXME: Need to check that the user exist in cache
-		// FIXME: get release_count
-		// FIXME: get module_count
-		gravatar_id := GetGravatarId(user_name)
+	for _, username := range users[offset:last] {
+		// FIXME: need to check that the user exist in cache
 
-		created_at := GetUserCreatedAt(user_name)
-		updated_at := GetUserUpdatedAt(user_name)
+		uri := "/v3/user/" + username
+		gravatar_id := GetGravatarId(username)
+		release_count := GetModuleReleaseCount(username)
+		module_count := GetModuleCount(username)
+		created_at := GetUserCreatedAt(username)
+		updated_at := GetUserUpdatedAt(username)
 
-		user, err := NewUser("/v3/user/"+user_name, user_name, gravatar_id, user_name, user_name, release_count, module_count, created_at, updated_at)
+		user, err := NewUser(uri, username, gravatar_id, username, username, release_count, module_count, created_at, updated_at)
 		if err == nil {
 			result = append(result, *user)
 		}
 	}
 	return result, nil
 }
+
 func get_PuppetModules(all_modules []string, offset int, limit int) ([]PuppetModule, error) {
 
 	// assert first >= 0
