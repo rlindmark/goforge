@@ -33,6 +33,10 @@ func CreatePagination(path string, query url.Values, total int) (*Pagination, er
 		return nil, fmt.Errorf("limit=%v is not an interger", url_limit)
 	}
 
+	if limit < 1 || limit > 100 {
+		return nil, fmt.Errorf("limit=%d must be between 1..100", limit)
+	}
+
 	url_offset := query.Get("offset")
 	if url_offset == "" {
 		return nil, fmt.Errorf("offset not defined in query %+v", query)
@@ -43,9 +47,6 @@ func CreatePagination(path string, query url.Values, total int) (*Pagination, er
 		return nil, fmt.Errorf("offset=%v is not an interger", url_offset)
 	}
 
-	if limit < 1 || limit > 100 {
-		return nil, fmt.Errorf("limit=%d must be between 1..100", limit)
-	}
 	if offset < 0 {
 		return nil, fmt.Errorf("offset=%d must be >= 0", offset)
 	}
