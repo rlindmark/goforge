@@ -72,16 +72,40 @@ func TestGetModuleFilePath(t *testing.T) {
 	}
 }
 
+func TestGetModules(t *testing.T) {
+	c := NewForgeCache("cache")
+
+	modules := c.GetModules("puppetlabs")
+	fmt.Printf("%v", modules)
+}
+
+func TestGetModuleCount(t *testing.T) {
+
+	c := NewForgeCache("cache")
+
+	modules := c.GetModuleCount("puppetlabs")
+
+	fmt.Printf("%v", modules)
+}
+func TestGetModuleReleaseCount(t *testing.T) {
+
+	c := NewForgeCache("cache")
+
+	modules := c.GetModuleReleaseCount("puppetlabs")
+
+	fmt.Printf("%v", modules)
+}
+
 func TestGetModuleVersions(t *testing.T) {
 	var testCases = []struct {
 		module_name string
-		expect      []string
+		expect      int
 	}{
-		{"", []string{""}},
-		{"p", []string{""}},
-		{"puppetlabs-stdlib", []string{""}},
-		{"puppetlabs-stdlib-9.4.0", []string{"cache/p/puppetlabs/puppetlabs-stdlib-9.4.0.tar.gz"}},
-		// {"puppetlabs-stdlib-9.3.0", []string{"cache/p/puppetlabs/puppetlabs-stdlib-9.3.0.tar.gz"}},
+		{"", 0},
+		{"p", 0},
+		{"puppetlabs-stdlib", 87},
+		{"puppetlabs-stdlib-9.4.0", 0},
+		{"pdxcat-nrpe", 1},
 	}
 
 	c := NewForgeCache("cache")
@@ -90,10 +114,9 @@ func TestGetModuleVersions(t *testing.T) {
 
 		result := c.GetModuleVersions(test.module_name)
 
-		fmt.Printf("GetModuleVersions(%v)=%v\n", test.module_name, result)
-		// if result != test.expect {
-		// 	t.Errorf("GetModuleFilePath(%v): got %v err=%v, expected %v", test.module_name, result, err, test.expect)
-		// }
+		if len(result) != test.expect {
+			t.Errorf("module %v got %d, expected %d", test.module_name, len(result), test.expect)
+		}
 	}
 }
 
