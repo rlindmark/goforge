@@ -37,6 +37,10 @@ type PuppetModule struct {
 	Pe_compatibility string `json:"pe_compatibility"`
 	Tasks            string `json:"tasks"`
 	Plans            string `json:"plans"`
+	// below 3 may be missing
+	//Created_at" string `json:"created_at"`
+	//Updated_at string `json:"updated_at"`
+	//Deleted_for": *string `json:"deleted_for"`
 }
 
 func file_sha256(filename string) (string, error) {
