@@ -397,6 +397,7 @@ func FetchModule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// FIXME: handle selection better
 	module_slug := r.URL.Path[10:]
 
 	res, _ := IsValidModuleSlug(module_slug)
@@ -601,14 +602,12 @@ func GetGravatarId(username string) string {
 
 // GetModuleReleaseCount returns total number of released modules username have in cache
 func GetModuleReleaseCount(username string) int {
-	// FIXME: Implement code
-	return 0
+	return forge_cache.GetModuleReleaseCount(username)
 }
 
 // GetModuleCount returns total number of modules username have in cache
 func GetModuleCount(username string) int {
-	// FIXME: Implement code
-	return 0
+	return forge_cache.GetModuleCount(username)
 }
 
 /*
@@ -735,9 +734,6 @@ func get_user_results(users []string, offset int, limit int) ([]User, error) {
 	}
 	last := min(total, offset+limit)
 
-	//release_count := 1
-	//module_count := 1
-
 	for _, username := range users[offset:last] {
 		// FIXME: need to check that the user exist in cache
 
@@ -775,13 +771,6 @@ func get_PuppetModules(all_modules []string, offset int, limit int) ([]PuppetMod
 		result = append(result, *puppet_module)
 	}
 	return result, nil
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }
 
 func get_v3_releases_module_result(module_name string) (*PuppetModule, error) {

@@ -25,3 +25,10 @@ func ValidModuleReleaseSlug(release_slug string) (bool, error) {
 
 	return false, fmt.Errorf(`{"message":"400 Bad Request","errors":["'%s' is not a valid release slug"]}`, release_slug)
 }
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}

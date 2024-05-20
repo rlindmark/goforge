@@ -98,6 +98,47 @@ func (c ForgeCache) GetAllUsers() []string {
 	// FIXME: only return directories and not files
 }
 
+func (c ForgeCache) GetModules(username string) []string {
+
+	hash := Module_hash(username)
+	if len(hash) == 0 {
+		return nil
+	}
+
+	userpath := fmt.Sprintf("%s/%s/%s/*", c.cache_root, hash, username)
+	files, err := filepath.Glob(userpath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	vsm := make([]string, len(files))
+	for i, v := range files {
+		vsm[i] = filepath.Base(v)
+	}
+	return vsm
+}
+
+func (c ForgeCache) GetModuleCount(username string) int {
+
+	modules := c.GetModules(username)
+
+	// filter out all modules
+	vsm := make(map[string]struct{})
+	for _, v := range modules {
+		moduleslug := strings.TrimSuffix(v, ".tar.gz")
+		_, modulename, _, _ := SplitModuleName(moduleslug)
+		vsm[modulename] = struct{}{}
+	}
+	return len(vsm)
+}
+
+func (c ForgeCache) GetModuleReleaseCount(username string) int {
+
+	modules := c.GetModules(username)
+
+	return len(modules)
+}
+
 // ModulePathInCache function not needed
 // func ModulePathInCache(module_name string) (string, error) {
 // 	if len(module_name) < 1 {
