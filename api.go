@@ -397,8 +397,15 @@ func FetchModule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// FIXME: handle selection better
-	module_slug := r.URL.Path[10:]
+	if filepath.Dir(r.URL.Path) != "/v3/modules" {
+		result := fmt.Sprintf(`{"message":"500 Internal Server Error","errors":["Internal Server Error. Path=%v"]}`, r.URL.Path)
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, result)
+		return
+	}
+
+	module_slug := r.URL.Path[len("/v3/modules/"):]
 
 	res, _ := IsValidModuleSlug(module_slug)
 	if !res {
@@ -410,6 +417,7 @@ func FetchModule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// FIXME: code for found module(s) are missing. Below 404 are just for looks
 	result := `{"message":"404 Not Found","errors":["The requested resource could not be found"]}`
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusNotFound)

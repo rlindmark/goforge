@@ -62,6 +62,45 @@ func TestCreateModuleRelease(t *testing.T) {
 	})
 }
 
+func TestFetchModule(t *testing.T) {
+	var testCases = []struct {
+		path          string
+		statusCode    int
+		contentLength int
+		response      string
+	}{
+		{"/v3/m/puppetlabs-stdlib-9.4.1", 500, -1, "ok"},
+		{"/v3/mmodulesa/puppetlabs-stdlib-9.4.1", 500, -1, "ok"},
+
+		{"/v3/modules/puppetlabs-stdlib-9.4.1", 400, -1, "ok"},
+
+		{"/v3/modules/puppetlabs-stdlib", 404, -1, "ok"},
+	}
+
+	t.Run("returns a forge module", func(t *testing.T) {
+
+		for _, test := range testCases {
+
+			request, _ := http.NewRequest(http.MethodGet, test.path, nil)
+			response := httptest.NewRecorder()
+
+			FetchModule(response, request)
+
+			//got := response.Body.String()
+			got := response.Result().StatusCode
+			if got != test.statusCode {
+				t.Errorf("url = %v expected statuscode = %d got %d", test.path, test.statusCode, got)
+			}
+			//fmt.Printf("response.Result() = %v", response.Result())
+			got = int(response.Result().ContentLength)
+			if got != test.contentLength {
+				t.Errorf("path:%v expected content lengt = %d got %d", test.path, test.contentLength, got)
+
+			}
+		}
+	})
+}
+
 func TestFetchModuleRelease(t *testing.T) {
 	var testCases = []struct {
 		path          string
