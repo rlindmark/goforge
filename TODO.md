@@ -2,6 +2,9 @@
 
 Sample list of things to do.
 
+* Change type name Module to Release
+
+
 * FetchUser()
   Stub out query parameters
 

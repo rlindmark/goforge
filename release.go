@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type Module struct {
+type Release struct {
 	Uri           string  `json:"uri"`
 	Slug          string  `json:"slug"`
 	Name          string  `json:"name"`
@@ -25,7 +25,7 @@ func isValidModuleName(name string) (bool, error) {
 }
 
 // module_name is the string "owner-module" with no version
-func NewModule(owner_module string) (*Module, error) {
+func NewRelease(owner_module string) (*Release, error) {
 	// uri = /v3/releases/puppetlabs-apache-4.0.0
 	//ok, _ := isValidModuleName(module_name)
 
@@ -51,6 +51,6 @@ func NewModule(owner_module string) (*Module, error) {
 		return nil, fmt.Errorf("cant create module with invalid uri:%v. Err=%v", owner_uri, err)
 	}
 
-	module := Module{module_uri, module_slug, module_name, module_deprecated_at, owner}
+	module := Release{module_uri, module_slug, module_name, module_deprecated_at, owner}
 	return &module, nil
 }

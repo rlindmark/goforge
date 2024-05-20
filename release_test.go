@@ -59,7 +59,7 @@ func TestIsValidModuleName(t *testing.T) {
 	}
 }
 
-func TestNewModule(t *testing.T) {
+func TestNewRelease(t *testing.T) {
 
 	var testCases = []struct {
 		modulename string
@@ -71,7 +71,7 @@ func TestNewModule(t *testing.T) {
 
 	for _, test := range testCases {
 
-		module, err := NewModule(test.modulename)
+		module, err := NewRelease(test.modulename)
 
 		// module && err == nil -> pass
 		// err != nil &&
@@ -84,7 +84,7 @@ func TestNewModule(t *testing.T) {
 	}
 }
 
-func TestModuleMarshal(t *testing.T) {
+func TestReleaseMarshal(t *testing.T) {
 
 	var testCases = []struct {
 		modulename string
@@ -97,7 +97,7 @@ func TestModuleMarshal(t *testing.T) {
 
 	for _, test := range testCases {
 
-		module, err := NewModule(test.modulename)
+		module, err := NewRelease(test.modulename)
 		if err != nil {
 			t.Errorf("Unhandeled test: err=%v", err)
 			continue

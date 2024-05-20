@@ -16,7 +16,7 @@ import (
 type PuppetModule struct {
 	Uri              string          `json:"uri"`  // "/v3/releases/puppetlabs-apache-4.0.0"
 	Slug             string          `json:"slug"` // "puppetlabs-apache-4.0.0"
-	Module           *Module         `json:"module"`
+	Module           *Release        `json:"module"`
 	Version          string          `json:"version"`
 	Metadata         json.RawMessage `json:"metadata"`
 	Tags             string          `json:"tags"`
@@ -144,7 +144,7 @@ func NewPuppetModule(owner_module_version string) (*PuppetModule, error) {
 		return nil, fmt.Errorf(`{"message":"404 Not Found","errors":["'The requested resource could not be found"]}`)
 	}
 	slug := owner_module_version
-	module, _ := NewModule(fmt.Sprintf("%s-%s", module_owner, module_name))
+	module, _ := NewRelease(fmt.Sprintf("%s-%s", module_owner, module_name))
 	version := module_version
 
 	metadata, _ := get_metadataJSON(owner_module_version)
