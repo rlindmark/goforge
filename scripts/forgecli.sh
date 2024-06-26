@@ -27,10 +27,9 @@ get_number_of_modules()
 
     if [ -z "$total" ] || [ "$total" == "null" ];
     then
-        echo "0"
-    else
-        echo "$total"
+        total=0
     fi
+    echo "$total"
 }
 
 
@@ -60,8 +59,7 @@ list_module_releases()
 
 in_cache()
 {
-    local filename="$1"
-    if [ -f "$filename" ];
+    if [ -f "$1" ];
     then
 	    return 1
     fi
@@ -72,6 +70,12 @@ in_cache()
 download_modules_from()
 {
     local filename="$1"
+
+    if [ ! -r "$filename" ];
+    then
+        echo "error:file $filename not readable"
+        exit 1
+    fi
 
     while IFS= read -r file_uri
     do
@@ -100,20 +104,16 @@ while getopts ":l:d:D:" options; do
     case "${options}" in
         l)
             query=${OPTARG}
-            #echo "list $query"
             list_module_releases "$query"
             ;;
         d)
             file_uri=${OPTARG}
-            #echo "download $file_uri"
             download_module_release "$file_uri"
             ;;
         D)
             filename=${OPTARG}
-            #echo "download from files $filename"
             download_modules_from "$filename"
             ;;
-
         *)
             usage
             ;;
