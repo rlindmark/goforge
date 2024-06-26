@@ -22,13 +22,16 @@ The `module_hash` is the first character of the module_owner string.
     ${CACHE_ROOT}/p/puppetlabs/puppetlabs-stdlib-1.1.0.tar.gz
     ${CACHE_ROOT}/p/puppetlabs/puppetlabs-concat-1.0.0.tar.gz
 
-In the direcotry goforge/scripts there's a script that simplifies downloading
-modules from <https://forgeapi.puppetlabs.com/> to populate the local cache.
+The script `scripts/forgecli.sh` may be used to simplify downloading modules from
+<https://forgeapi.puppetlabs.com/> to populate the local cache.
 
 ## Building
 
 Build the code using make.
 
+    make cache  # to create a local cache and populate it with some forge modules
+    make
+    
 ## Change default puppet settings
 
 Change the default puppet config settings to point to goforge:s
@@ -66,14 +69,17 @@ No state except the data that can be extracted from the locally cached
 ## Q and A
 
 Q: Why create a forgeapi clone?
+
 A: In environments without direct access to the internet, some puppet-tools cant be used.
    This application tries to resolve some of these problems. This code should make it
    possible to use "puppet module install" and "r10k" work.
 
 Q: Why golang?
+
 A: This project have been used to begin learning golang. Golang also seem to have some
    native support for transportable static binaries.
 
 Q: Why is TLS missing?
-A: The idea have been to put this application behind some frontend that is responsible
+
+A: The idea is to have this application behind some web frontend that is responsible
    for the TLS stuff.
